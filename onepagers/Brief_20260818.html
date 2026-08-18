@@ -1,0 +1,158 @@
+<title>實踐國企晨報 2026-08-18 · 一頁摘要</title>
+<style>
+  /* Newsprint, matching the brief site: ink on cream, indigo rules, crimson emphasis.
+     Single-theme by design — this is a printable/shareable sheet, not a reading app. */
+  :root{
+    --paper:#f7f4ed; --ink:#1f1c18; --mut:#6b6459; --rule:#d7cfbf;
+    --indigo:#1c3f6e; --crimson:#8c2f1f; --card:#fffdf8;
+    --up:#c8102e; --down:#00794d;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Noto Serif TC","Songti TC",Georgia,serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .sheet{max-width:1180px; margin:0 auto; padding:2rem 1.5rem 3rem;}
+
+  /* ---- masthead ---- */
+  .masthead{border-bottom:3px double var(--ink); padding-bottom:.7rem; margin-bottom:.4rem;}
+  .mast-row{display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap;}
+  .mast-title{font-size:clamp(1.7rem,4.2vw,2.7rem); font-weight:700; letter-spacing:.04em; margin:0;}
+  .mast-date{font-size:clamp(1rem,2.2vw,1.35rem); font-weight:700; color:var(--indigo);
+             letter-spacing:.02em; font-variant-numeric:tabular-nums;}
+  .mast-sub{display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+            font-size:.72rem; color:var(--mut); letter-spacing:.14em; margin-top:.45rem;
+            font-family:ui-sans-serif,system-ui,sans-serif;}
+
+  /* ---- market strip ---- */
+  .market{display:flex; gap:0; flex-wrap:wrap; border-bottom:1px solid var(--rule);
+          padding:.55rem 0; margin-bottom:1.4rem; font-variant-numeric:tabular-nums;}
+  .mk{flex:1 1 145px; padding:.15rem .6rem; border-right:1px solid var(--rule);}
+  .mk:last-child{border-right:0;}
+  .mk-n{font-size:.68rem; color:var(--mut); letter-spacing:.06em;
+        font-family:ui-sans-serif,system-ui,sans-serif;}
+  .mk-v{font-size:1rem; font-weight:700; line-height:1.3;}
+  .mk-c{font-size:.76rem; font-weight:700;}
+  .down{color:var(--down);} .up{color:var(--up);}
+
+  /* ---- topic grid ---- */
+  .grid{display:grid; gap:.9rem; grid-template-columns:repeat(auto-fit,minmax(330px,1fr));}
+  .item{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--indigo);
+        padding:.85rem 1rem .9rem; display:flex; flex-direction:column;}
+  .tag{font-size:.66rem; letter-spacing:.16em; color:var(--indigo); font-weight:700;
+       font-family:ui-sans-serif,system-ui,sans-serif; margin-bottom:.35rem;}
+  .head{font-size:.94rem; font-weight:700; line-height:1.5; margin:0 0 .45rem; text-wrap:balance;}
+  .head .num{color:var(--crimson);}
+  .say{font-size:.8rem; color:#3d3730; line-height:1.65; margin:0; padding-top:.45rem;
+       border-top:1px dotted var(--rule);}
+  .say b{color:var(--crimson); font-weight:700;}
+  .gap{border-left-color:var(--mut);}
+  .gap .tag{color:var(--mut);}
+
+  /* ---- footer ---- */
+  .foot{margin-top:1.5rem; border-top:1px solid var(--rule); padding-top:.7rem;
+        display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+        font-size:.68rem; color:var(--mut); letter-spacing:.04em;
+        font-family:ui-sans-serif,system-ui,sans-serif;}
+  .foot a{color:var(--indigo);}
+
+  @media print{
+    body{background:#fff;}
+    .sheet{padding:0; max-width:none;}
+    .item{break-inside:avoid;}
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="mast-row">
+      <h1 class="mast-title">實踐國企晨報</h1>
+      <span class="mast-date">2026 年 8 月 18 日（二）</span>
+    </div>
+    <div class="mast-sub">
+      <span>KH USC IBM&rsquo;S DAILY BRIEF</span>
+      <span>實踐大學高雄校區　國際企業管理學系</span>
+    </div>
+  </header>
+
+  <section class="market" aria-label="前一日市場">
+    <div class="mk"><div class="mk-n">道瓊</div><div class="mk-v">53,419.47</div>
+      <div class="mk-c down">-372.38　-0.69%</div></div>
+    <div class="mk"><div class="mk-n">標普 500</div><div class="mk-v">7,701.38</div>
+      <div class="mk-c down">-26.82　-0.35%</div></div>
+    <div class="mk"><div class="mk-n">那斯達克</div><div class="mk-v">26,291.21</div>
+      <div class="mk-c down">-154.24　-0.58%</div></div>
+    <div class="mk"><div class="mk-n">費城半導體</div><div class="mk-v">11,989.21</div>
+      <div class="mk-c down">-109.26　-0.90%</div></div>
+    <div class="mk"><div class="mk-n">台股加權</div><div class="mk-v">45,308.68</div>
+      <div class="mk-c down">-209.39　-0.46%</div></div>
+    <div class="mk"><div class="mk-n">日經 225</div><div class="mk-v">67,460.73</div>
+      <div class="mk-c down">-63.33　-0.09%</div></div>
+  </section>
+
+  <div class="grid">
+
+    <article class="item">
+      <div class="tag">國際企業</div>
+      <p class="head">Google 通知供應商：<span class="num">2027 年</span>起 Pixel 手機、手錶、耳機全數移出中國，轉往越南與印度</p>
+      <p class="say"><b>沒有中國市場可失去，是這次撤出成本極低的原因</b>，這也讓 Pixel 不能當作其他品牌的先例。越南能接手的關鍵在三星既有的手機供應鏈。</p>
+    </article>
+
+    <article class="item">
+      <div class="tag">國際企業</div>
+      <p class="head">鴻海同日兩案：越南增資 <span class="num">3.58 億美元</span>、墨西哥 Jalisco 購地 <span class="num">3.83 億披索</span></p>
+      <p class="say"><b>同日在越南與墨西哥各下一手，對應的是兩個不同的關稅風險</b>，而非單一擴產計畫。墨西哥的價值取決於美墨加協定走向。</p>
+    </article>
+
+    <article class="item">
+      <div class="tag">日／韓</div>
+      <p class="head">日本 10 年期公債殖利率逼近 <span class="num">3%</span>、三十年最高；韓國 <span class="num">3,500 億美元</span>對美投資包裹談判進入最後階段</p>
+      <p class="say"><b>日韓同日各自面對一種資本的重新定價。</b>韓方首案的產業別是台灣半導體的直接風向球——若為記憶體產能而非能源，代表美方要的是產能移轉。</p>
+    </article>
+
+    <article class="item">
+      <div class="tag">無人載具</div>
+      <p class="head">十四個版本的無人載具條例定於 <span class="num">8 月 20 日</span>協商；行政院版 <span class="num">2,100 億</span>與國民黨團版 <span class="num">2,400 億</span>差在預算形式</p>
+      <p class="say"><b>在野版總額還高 300 億元，爭的是誰在何時審查。</b>8 月 20 日只看一件事——經費編列方式是否鬆動，總額之爭可略。</p>
+    </article>
+
+    <article class="item">
+      <div class="tag">人工智慧</div>
+      <p class="head">歐盟 AI Act 對通用模型的執法權與加州 SB 942 於同一日 <span class="num">8 月 2 日</span>生效，加州係刻意對齊</p>
+      <p class="say"><b>兩者的交集在「內容可識別性」，管的不是模型能力。</b>受影響最直接的是把生成式功能嵌進既有產品的一般企業。</p>
+    </article>
+
+    <article class="item">
+      <div class="tag">財稅與會計政策</div>
+      <p class="head">財政部修正貨物稅稽徵規則：電動車自 <span class="num">2027 年 1 月 1 日</span>起改採具結免稅，取代先徵後退</p>
+      <p class="say"><b>這是現金流的制度變更，稅率完全沒動。</b>具結免稅使該筆稅款不再形成應收退稅款，資產負債表科目與週轉天數同步變動。</p>
+    </article>
+
+    <article class="item">
+      <div class="tag">核能產業</div>
+      <p class="head">福島含氚廢水第 <span class="num">22</span> 批次 8 月 17 日排放完畢；累計已排 <span class="num">172,729</span> 立方公尺</p>
+      <p class="say"><b>排放已進行三年，在台灣的公共討論裡幾乎消失，但監測仍在逐批進行。</b>監測本身已常態化為每年約 2,800 件樣本。</p>
+    </article>
+
+    <article class="item">
+      <div class="tag">核能產業</div>
+      <p class="head">核三廠換照案已進入再運轉計畫<span class="num">第三（總結）</span>回合審查，<span class="num">8 月 1 日</span>於恆春舉行地方說明會</p>
+      <p class="say"><b>第三回合是總結回合，比任何政治表態都更能指示時程。</b>台電自主安全檢查原估 18 至 24 個月，該時程與審查結論何者為瓶頸，決定實際再運轉日。</p>
+    </article>
+
+    <article class="item gap">
+      <div class="tag">東南亞　·　本日無一手來源</div>
+      <p class="head">三個固定來源遭 WAF 阻擋（403／307），已更換為三家菲媒 RSS，明日起實質巡檢</p>
+      <p class="say">背景仍有效：菲律賓上半年對中提出 <b>27 次</b>外交抗議，黃岩島現存 3 個浮標與 1 個浮桶；中方 8 月 6 日首度確認 2025 年撞船有 2 人死亡。</p>
+    </article>
+
+  </div>
+
+  <footer class="foot">
+    <span>本報彙整公開資訊，非投資或決策建議　·　全文標記「待查核」共 24 處</span>
+    <span>26 個固定巡檢網址　·　完整版 <a href="https://geostrategist.github.io/daily-brief/">geostrategist.github.io/daily-brief</a></span>
+  </footer>
+
+</div>
