@@ -1,0 +1,18 @@
+{
+  "name": "駱駱精選晨報 LoLo's Daily Brief",
+  "short_name": "駱駱晨報",
+  "description": "每日巡檢：兩岸、東南亞、日本、無人載具、人工智慧、財稅與會計政策。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#121212",
+  "theme_color": "#004030",
+  "lang": "zh-Hant",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

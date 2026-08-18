@@ -1,0 +1,73 @@
+# 駱駱精選晨報 · LoLo's Daily Brief
+
+每日巡檢六大主題並產出一份晨報：兩岸、東南亞、日本、無人載具、人工智慧、財稅與會計政策。
+
+網站：https://geostrategist.github.io/daily-brief/
+
+---
+
+## 這是什麼
+
+一個沒有後端的靜態網站。每天由 Claude Code 排程 agent 巡檢固定來源、比對前 21 份晨報、只寫變化，產出一份 Markdown 檔並推上 GitHub Pages。
+
+前端在瀏覽器端讀 Markdown 並渲染，支援日期切換、語音朗讀、離線閱讀與手機安裝。
+
+## 目錄結構
+
+```
+index.html              單檔前端（Tailwind CDN + marked + DOMPurify + Web Speech API）
+manifest.json           PWA 設定
+sw.js                   Service Worker：外殼快取優先，晨報內容網路優先
+briefs/
+  manifest.json         日期索引，新的在最前面
+  Brief_YYYYMMDD.md     每日晨報
+icons/                  PWA 圖示
+_system/
+  TOPICS.md             主題設定 — 改這裡就改變隔日巡檢範圍
+  SOURCES.md            固定巡檢網址清單（26 個）
+  EDITORIAL.md          編輯規範 — 決定怎麼寫
+  rebuild-manifest.py   依 briefs/ 內實際檔案重建索引
+```
+
+三份 `_system/` 設定檔是這個專案的核心。程式碼幾乎不必再動，日常調整都在這三份檔案裡。
+
+## 每日流程
+
+1. 讀 `_system/TOPICS.md`、`SOURCES.md`、`EDITORIAL.md`
+2. 逐一 WebFetch 固定來源，取得失敗者記錄於當日晨報，不靜默略過
+3. 回溯比對近 21 份晨報，只寫新增與變化
+4. 產出 `briefs/Brief_YYYYMMDD.md`，含建議決策行動與應持續追蹤議題兩節
+5. 更新 `briefs/manifest.json`
+6. commit 並 push，GitHub Pages 自動發布
+
+## 本機預覽
+
+```bash
+python -m http.server 8899
+# 開 http://localhost:8899
+```
+
+`file://` 直接開會因 CORS 而讀不到 `briefs/`，必須起一個 server。
+
+## 新增一份晨報
+
+把 `Brief_YYYYMMDD.md` 放進 `briefs/`，然後：
+
+```bash
+python _system/rebuild-manifest.py
+git add . && git commit -m "brief: YYYY-MM-DD" && git push
+```
+
+## 設計取捨
+
+**為什麼是 Markdown 而非 HTML**：內容與呈現分離。改版面不必碰內容，改內容不必碰程式。
+
+**為什麼不用框架**：沒有建置步驟，就沒有建置失敗。排程 agent 只需寫一個檔案再推上去。
+
+**為什麼朗讀用瀏覽器 TTS 而非音檔**：不必產製、不必儲存、不必付費。代價是語音品質受限於使用者的作業系統。
+
+**免責**：本報彙整公開資訊，非投資或決策建議。
+
+---
+
+駱世民 Shihmin Lo · 國立暨南國際大學管理學院
