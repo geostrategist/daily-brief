@@ -1,8 +1,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>實踐國企晨報 · KH USC IBM's Daily Brief</title>
-<meta name="description" content="每日巡檢：兩岸、東南亞、日本、無人載具、人工智慧、財稅與會計政策。">
-<meta name="theme-color" content="#004030">
+<meta name="description" content="每日巡檢：國際企業、東南亞、日本、無人載具、人工智慧、財稅與會計政策，附前一日市場。">
+<meta name="theme-color" content="#f7f4ed">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -14,46 +14,48 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 
 <style>
-  :root { color-scheme: dark; }
-  body { font-family: 'Noto Serif TC', 'Inter', ui-serif, serif; background:#121212; color:#e8e6e1; }
+  :root { color-scheme: light; }
+  body { font-family: 'Noto Serif TC', 'Inter', ui-serif, serif; background:#f7f4ed; color:#1f1c18; }
   .prose-brief { line-height: 1.9; }
-  .prose-brief h1 { font-size:1.6rem; font-weight:700; margin:0 0 1rem; color:#fff; }
+  .prose-brief h1 { font-size:1.7rem; font-weight:700; margin:0 0 1.2rem; color:#1f1c18; letter-spacing:-.01em; }
   .prose-brief h2 { font-size:1.25rem; font-weight:700; margin:2.5rem 0 .75rem; padding-bottom:.5rem;
-                    border-bottom:1px solid #2f3a36; color:#7fd1b9; }
-  .prose-brief h3 { font-size:1.05rem; font-weight:600; margin:2rem 0 .6rem; color:#fff; }
+                    border-bottom:1px solid #ddd6c8; color:#1c3f6e; }
+  .prose-brief h3 { font-size:1.05rem; font-weight:700; margin:2rem 0 .6rem; color:#1f1c18; }
   .prose-brief p { margin:.85rem 0; }
   .prose-brief ul { margin:.85rem 0; padding-left:1.25rem; list-style:disc; }
   .prose-brief li { margin:.4rem 0; }
-  .prose-brief a { color:#7fd1b9; text-decoration:underline; text-underline-offset:2px; word-break:break-word; }
-  .prose-brief a:hover { color:#a8e6d4; }
-  .prose-brief strong { color:#fff; font-weight:700; }
-  .prose-brief hr { border:0; border-top:1px solid #2f3a36; margin:2rem 0; }
-  .prose-brief code { background:#1e2422; padding:.15em .4em; border-radius:.25rem; font-size:.9em; }
+  .prose-brief a { color:#1c3f6e; text-decoration:underline; text-underline-offset:2px; word-break:break-word; }
+  .prose-brief a:hover { color:#2d5a94; }
+  .prose-brief strong { color:#8c2f1f; font-weight:700; }
+  .prose-brief hr { border:0; border-top:1px solid #ddd6c8; margin:2rem 0; }
+  .prose-brief code { background:#e9e3d6; padding:.15em .4em; border-radius:.25rem; font-size:.9em; }
   .prose-brief table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:.92rem; display:block; overflow-x:auto; }
-  .prose-brief th, .prose-brief td { border:1px solid #2f3a36; padding:.5rem .7rem; text-align:left; }
-  .prose-brief th { background:#1a201e; }
-  .speaking { background:#004030; border-radius:.25rem; }
-  ::selection { background:#004030; }
+  .prose-brief th, .prose-brief td { border:1px solid #ddd6c8; padding:.5rem .7rem; text-align:left; }
+  .prose-brief th { background:#efe9dc; }
+  .speaking { background:#dfe7f1; border-radius:.25rem; }
+  ::selection { background:#dfe7f1; }
 </style>
 
 <div class="min-h-screen flex flex-col">
 
-  <header class="sticky top-0 z-20 backdrop-blur bg-[#121212]/90 border-b border-[#2f3a36]">
+  <header class="sticky top-0 z-20 backdrop-blur bg-[#f7f4ed]/92 border-b border-[#ddd6c8]">
     <div class="max-w-3xl mx-auto px-4 py-3">
       <div class="flex items-baseline justify-between gap-3">
-        <h1 class="text-base sm:text-lg font-bold text-white">實踐國企晨報</h1>
-        <span class="text-xs text-[#8a9490] font-sans">KH USC IBM&rsquo;s Daily Brief</span>
+        <h1 class="text-base sm:text-lg font-bold text-[#1f1c18]">
+          實踐國企晨報<span id="hdrdate" class="ml-2 font-normal text-[#6b6459] text-sm"></span>
+        </h1>
+        <span class="hidden sm:inline text-xs text-[#6b6459] font-sans">KH USC IBM&rsquo;s Daily Brief</span>
       </div>
 
       <div class="mt-3 flex items-center gap-2 font-sans">
-        <button id="prev" class="px-2.5 py-1.5 rounded bg-[#1e2422] hover:bg-[#2a3230] disabled:opacity-30 disabled:cursor-not-allowed text-sm" aria-label="前一天">&lsaquo;</button>
-        <select id="picker" class="flex-1 min-w-0 bg-[#1e2422] rounded px-2 py-1.5 text-sm text-[#e8e6e1] border border-[#2f3a36]" aria-label="選擇日期"></select>
-        <button id="next" class="px-2.5 py-1.5 rounded bg-[#1e2422] hover:bg-[#2a3230] disabled:opacity-30 disabled:cursor-not-allowed text-sm" aria-label="後一天">&rsaquo;</button>
+        <button id="prev" class="px-2.5 py-1.5 rounded bg-[#e9e3d6] hover:bg-[#ded7c8] disabled:opacity-30 disabled:cursor-not-allowed text-sm" aria-label="前一天">&lsaquo;</button>
+        <select id="picker" class="flex-1 min-w-0 bg-[#e9e3d6] rounded px-2 py-1.5 text-sm text-[#1f1c18] border border-[#ddd6c8]" aria-label="選擇日期"></select>
+        <button id="next" class="px-2.5 py-1.5 rounded bg-[#e9e3d6] hover:bg-[#ded7c8] disabled:opacity-30 disabled:cursor-not-allowed text-sm" aria-label="後一天">&rsaquo;</button>
       </div>
 
       <div class="mt-2 flex items-center gap-2 font-sans text-xs" id="ttsbar">
-        <button id="play" class="px-3 py-1.5 rounded bg-[#004030] hover:bg-[#005a44] text-white">▶ 朗讀</button>
-        <button id="stop" class="px-3 py-1.5 rounded bg-[#1e2422] hover:bg-[#2a3230]">■</button>
+        <button id="play" class="px-3 py-1.5 rounded bg-[#1c3f6e] hover:bg-[#16345c] text-white">▶ 朗讀</button>
+        <button id="stop" class="px-3 py-1.5 rounded bg-[#e9e3d6] hover:bg-[#ded7c8]">■</button>
         <div class="flex gap-1 ml-auto" id="rates"></div>
       </div>
 
@@ -63,10 +65,10 @@
   </header>
 
   <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-6">
-    <article id="content" class="prose-brief"><p class="text-[#8a9490]">載入中…</p></article>
+    <article id="content" class="prose-brief"><p class="text-[#6b6459]">載入中…</p></article>
   </main>
 
-  <footer class="border-t border-[#2f3a36] py-6 text-center text-xs text-[#8a9490] font-sans px-4">
+  <footer class="border-t border-[#ddd6c8] py-6 text-center text-xs text-[#6b6459] font-sans px-4">
     <p>本報彙整公開資訊，非投資或決策建議。</p>
     <p class="mt-1">實踐大學高雄校區 國際企業管理學系</p>
   </footer>
@@ -108,21 +110,26 @@ async function show(i) {
   picker.value = idx;
   prevBtn.disabled = idx >= briefs.length - 1;   // no older brief
   nextBtn.disabled = idx <= 0;                   // no newer brief
-  contentEl.innerHTML = '<p class="text-[#8a9490]">載入中…</p>';
+  contentEl.innerHTML = '<p class="text-[#6b6459]">載入中…</p>';
   try {
     const res = await fetch('briefs/' + briefs[idx].file, { cache: 'no-cache' });
     if (!res.ok) throw new Error(res.status);
     const md = await res.text();
     contentEl.innerHTML = DOMPurify.sanitize(marked.parse(md), { ADD_ATTR: ['target'] });
+    // the brief repeats its own title; the header already shows it
+    const dup = contentEl.querySelector('h1');
+    if (dup) dup.remove();
     contentEl.querySelectorAll('a[href^="http"]').forEach(function (a) {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });
     buildTopicNav();
     window.scrollTo({ top: 0 });
+    document.getElementById('hdrdate').textContent =
+      briefs[idx].date + '（' + weekday(briefs[idx].date) + '）';
     history.replaceState(null, '', '#' + briefs[idx].date);
   } catch (e) {
-    contentEl.innerHTML = '<p class="text-red-400">讀取失敗：' + e.message + '</p>';
+    contentEl.innerHTML = '<p class="text-[#8c2f1f]">讀取失敗：' + e.message + '</p>';
   }
 }
 
@@ -133,7 +140,7 @@ const topicNav = document.getElementById('topicnav');
 let sections = [];
 
 function shortLabel(text) {
-  // 「主題一：兩岸關係」-> 「兩岸關係」; other headings keep their own text
+  // 「主題一：國際企業」-> 「國際企業」; other headings keep their own text
   const m = text.match(/^主題[一二三四五六七八九十]+[：:]\s*(.+)$/);
   return m ? m[1] : text;
 }
@@ -150,7 +157,7 @@ function buildTopicNav() {
     const btn = document.createElement('button');
     btn.textContent = shortLabel(h.textContent.trim());
     btn.dataset.target = i;
-    btn.className = 'shrink-0 px-2.5 py-1 rounded bg-[#1e2422] hover:bg-[#2a3230] whitespace-nowrap';
+    btn.className = 'shrink-0 px-2.5 py-1 rounded bg-[#e9e3d6] hover:bg-[#ded7c8] whitespace-nowrap';
     btn.onclick = function () {
       const top = h.getBoundingClientRect().top + window.scrollY
                 - document.querySelector('header').offsetHeight - 8;
@@ -171,7 +178,7 @@ function paintActiveTopic() {
   });
   sections.forEach(function (s, i) {
     s.btn.className = 'shrink-0 px-2.5 py-1 rounded whitespace-nowrap ' +
-      (i === active ? 'bg-[#004030] text-white' : 'bg-[#1e2422] hover:bg-[#2a3230]');
+      (i === active ? 'bg-[#1c3f6e] text-white' : 'bg-[#e9e3d6] hover:bg-[#ded7c8]');
   });
   // keep the active chip visible in the scrolling strip
   const a = sections[active].btn;
@@ -218,7 +225,7 @@ let speaking = false;
 function paintRates() {
   document.querySelectorAll('#rates button').forEach(function (b) {
     b.className = 'px-2 py-1 rounded ' +
-      (+b.dataset.rate === rate ? 'bg-[#004030] text-white' : 'bg-[#1e2422] hover:bg-[#2a3230]');
+      (+b.dataset.rate === rate ? 'bg-[#1c3f6e] text-white' : 'bg-[#e9e3d6] hover:bg-[#ded7c8]');
   });
 }
 paintRates();
@@ -302,14 +309,14 @@ if (synth) synth.onvoiceschanged = function () {};
   try {
     await loadManifest();
     if (!briefs.length) {
-      contentEl.innerHTML = '<p class="text-[#8a9490]">尚無晨報。</p>';
+      contentEl.innerHTML = '<p class="text-[#6b6459]">尚無晨報。</p>';
       return;
     }
     const want = location.hash.replace('#', '');
     const at = briefs.findIndex(function (b) { return b.date === want; });
     await show(at >= 0 ? at : 0);
   } catch (e) {
-    contentEl.innerHTML = '<p class="text-red-400">無法載入索引：' + e.message + '</p>';
+    contentEl.innerHTML = '<p class="text-[#8c2f1f]">無法載入索引：' + e.message + '</p>';
   }
 })();
 
