@@ -51,7 +51,7 @@
 檔名 `Brief_YYYYMMDD.md`，置於 `briefs/`。結構如下：
 
 ```
-# 駱駱精選晨報 — YYYY-MM-DD
+# 實踐晨報 — YYYY-MM-DD
 
 - **產出時間**：YYYY-MM-DD（headless 排程；星期）
 - **主題來源**：`_system/TOPICS.md`（N 個主題）
