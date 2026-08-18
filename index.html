@@ -107,10 +107,54 @@
   .card ul { margin:.7rem 0 0; padding-left:1.1rem; font-size:.88rem; }
   .card ul li { color:var(--mut); }
   .card ul li strong { color:var(--mut); }
+  /* source grade badge: reliability visible before reading, not after */
+  .grade { display:inline-block; font-family:ui-sans-serif,system-ui,sans-serif; font-size:.62rem;
+           font-weight:700; letter-spacing:.06em; padding:.1rem .4rem; border-radius:3px;
+           vertical-align:.12em; margin-right:.4rem; }
+  .g-A { background:#1c6b4a; color:#fff; }
+  .g-B { background:var(--head); color:var(--bg); }
+  .g-C { background:#8a6d3b; color:#fff; }
+
+  /* one-line summary: the reader's exit point if they read nothing else */
+  .lede { font-size:.95rem; line-height:1.7; margin:.1rem 0 .8rem; padding:.5rem .75rem;
+          background:var(--th); border-left:2px solid var(--head); color:var(--tx); }
+
+  /* fact vs analysis, made visible */
+  .seg { font-family:ui-sans-serif,system-ui,sans-serif; font-size:.62rem; font-weight:700;
+         letter-spacing:.16em; color:var(--mut); margin:.9rem 0 .25rem; }
+  .card > details { margin-top:.6rem; }
+  .card > details > summary { cursor:pointer; font-family:ui-sans-serif,system-ui,sans-serif;
+         font-size:.75rem; color:var(--head); list-style:none; padding:.3rem 0; }
+  .card > details > summary::-webkit-details-marker { display:none; }
+  .card > details > summary::before { content:'▸ '; }
+  .card > details[open] > summary::before { content:'▾ '; }
+
+  /* today's summary block */
+  .digest { border:1px solid var(--line); border-top:3px solid var(--head); background:var(--card);
+            padding:1rem 1.15rem; margin:0 0 1.6rem; }
+  .digest h2 { margin:0 0 .6rem !important; border:0 !important; padding:0 !important; font-size:1.05rem; }
+
+  /* reading progress + back to top */
+  #bar { position:fixed; top:0; left:0; height:2px; background:var(--head); z-index:40; width:0; }
+  #totop { position:fixed; right:1rem; bottom:1rem; z-index:30; display:none;
+           width:2.6rem; height:2.6rem; border-radius:50%; border:1px solid var(--line);
+           background:var(--card); color:var(--tx); font-size:1rem; cursor:pointer; }
+  #totop.on { display:block; }
+
+  @media (max-width:640px) {
+    body { font-size:18px; }
+    .prose-brief { line-height:1.9; }
+    .prose-brief h3 { font-size:1rem; }
+    .card { padding:.8rem .85rem; }
+  }
+
   .speaking { background:var(--mark); border-radius:.25rem; }
   ::selection { background:var(--mark); }
   :focus-visible { outline:2px solid var(--link); outline-offset:2px; }
 </style>
+
+<div id="bar"></div>
+<button id="totop" aria-label="回到頂端">↑</button>
 
 <div class="min-h-screen flex flex-col">
 
@@ -123,10 +167,15 @@
         <span id="hdrdate" class="muted shrink-0"></span>
 
         <button id="play" class="btn-on px-2.5 py-1 rounded shrink-0">▶ 朗讀</button>
-        <button id="stop" class="btn px-2 py-1 rounded shrink-0" aria-label="停止朗讀">■</button>
-        <div class="flex gap-1 shrink-0" id="rates"></div>
+        <button id="gear" class="btn px-2 py-1 rounded shrink-0 ml-auto" aria-expanded="false"
+                aria-controls="settings" title="設定">⚙</button>
+      </div>
 
-        <label class="ml-auto flex items-center gap-1 shrink-0">
+      <div id="settings" class="hidden mt-2 flex items-center gap-2 flex-wrap font-sans text-xs">
+        <button id="stop" class="btn px-2 py-1 rounded" aria-label="停止朗讀">■ 停止</button>
+        <span class="muted">語速</span>
+        <div class="flex gap-1" id="rates"></div>
+        <label class="flex items-center gap-1 ml-auto">
           <span class="muted">風格</span>
           <select id="skin" class="btn rounded px-1.5 py-1 border" style="border-color:var(--line)"
                   aria-label="選擇版面風格">
@@ -212,6 +261,8 @@ async function show(i) {
     });
     colourMarketTable();
     groupIntoCards();
+    styleDigest();
+    paintProgress();
     buildTopicNav();
     window.scrollTo({ top: 0 });
     document.getElementById('hdrdate').textContent =
@@ -256,7 +307,92 @@ function groupIntoCards() {
       card.appendChild(n);
       n = next;
     }
+    structureCard(card);
   });
+}
+
+// Pull the reliability grade out of the headline and show it as a badge.
+// Written as 〔A〕/〔B〕/〔C〕 in the Markdown; absent on older briefs, which
+// simply render without a badge rather than breaking.
+function extractGrade(card) {
+  const h = card.querySelector('h3');
+  if (!h) return;
+  const m = h.textContent.match(/〔([ABC])〕/);
+  if (!m) return;
+  h.textContent = h.textContent.replace('〔' + m[1] + '〕', '').replace(/\s{2,}/g, ' ');
+  const b = document.createElement('span');
+  b.className = 'grade g-' + m[1];
+  b.textContent = m[1];
+  b.title = { A: '官方文件、法規原文、公司重訊、通訊社直發',
+              B: '具署名的專業媒體',
+              C: '二手轉載或未署名報導' }[m[1]];
+  h.insertBefore(b, h.firstChild);
+}
+
+// Separate what happened from what we think about it. The brief writes the
+// analysis as a paragraph opening in bold, so that is the split point.
+function structureCard(card) {
+  extractGrade(card);
+
+  // a blockquote directly after the headline is the one-line summary
+  const first = card.querySelector('h3 + blockquote');
+  if (first) {
+    const l = document.createElement('p');
+    l.className = 'lede';
+    l.textContent = first.textContent.replace(/^一句話摘要[:：]\s*/, '').trim();
+    first.replaceWith(l);
+  }
+
+  const kids = [...card.children];
+  const paras = kids.filter(function (n) { return n.tagName === 'P' && !n.classList.contains('lede'); });
+  if (!paras.length) return;
+
+  // the analysis paragraph is the first one that starts with bold text
+  const judged = paras.find(function (n) {
+    const f = n.firstElementChild;
+    return f && f.tagName === 'STRONG' && n.textContent.trim().startsWith(f.textContent.trim());
+  });
+
+  if (judged && paras[0] !== judged) {
+    card.insertBefore(seg('事實'), paras[0]);
+    card.insertBefore(seg('判讀'), judged);
+  }
+
+  // sources and caveats fold away; they matter, but not on first read
+  const list = card.querySelector('ul');
+  if (list && /來源|待查核/.test(list.textContent)) {
+    const d = document.createElement('details');
+    const sm = document.createElement('summary');
+    const cav = (list.textContent.match(/待查核/g) || []).length;
+    sm.textContent = '來源與待查核' + (cav ? '（' + cav + ' 項待查核）' : '');
+    d.appendChild(sm);
+    list.parentNode.insertBefore(d, list);
+    d.appendChild(list);
+  }
+}
+
+function seg(label) {
+  const d = document.createElement('div');
+  d.className = 'seg';
+  d.textContent = label;
+  return d;
+}
+
+// The digest is the reader's three-minute exit. Lift it out of the prose flow.
+function styleDigest() {
+  const h = [...contentEl.querySelectorAll('h2')]
+    .find(function (x) { return /今日三分鐘摘要|今日摘要/.test(x.textContent); });
+  if (!h) return;
+  const box = document.createElement('section');
+  box.className = 'digest';
+  h.parentNode.insertBefore(box, h);
+  box.appendChild(h);
+  let n = box.nextElementSibling;
+  while (n && n.tagName !== 'H2' && n.tagName !== 'HR') {
+    const next = n.nextElementSibling;
+    box.appendChild(n);
+    n = next;
+  }
 }
 
 // ---------- topic navigation ----------
@@ -281,7 +417,11 @@ function buildTopicNav() {
   heads.forEach(function (h, i) {
     h.id = 'sec-' + i;
     const btn = document.createElement('button');
-    btn.textContent = shortLabel(h.textContent.trim());
+    let n = 0;
+    for (let x = h.nextElementSibling; x && x.tagName !== 'H2'; x = x.nextElementSibling) {
+      if (x.classList && x.classList.contains('card')) n++;
+    }
+    btn.textContent = shortLabel(h.textContent.trim()) + (n ? ' ' + n : '');
     btn.dataset.target = i;
     btn.className = 'btn shrink-0 px-2.5 py-1 rounded whitespace-nowrap';
     btn.onclick = function () {
@@ -429,6 +569,26 @@ playBtn.onclick = function () {
 stopBtn.onclick = stopSpeech;
 window.addEventListener('beforeunload', function () { if (synth) synth.cancel(); });
 if (synth) synth.onvoiceschanged = function () {};
+
+// ---------- chrome: settings, progress, back to top ----------
+const gear = document.getElementById('gear');
+const settings = document.getElementById('settings');
+gear.onclick = function () {
+  const open = settings.classList.toggle('hidden') === false;
+  gear.setAttribute('aria-expanded', String(open));
+};
+
+const bar = document.getElementById('bar');
+const toTop = document.getElementById('totop');
+toTop.onclick = function () { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+function paintProgress() {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+  toTop.classList.toggle('on', window.scrollY > 600);
+}
+window.addEventListener('scroll', paintProgress, { passive: true });
+window.addEventListener('resize', paintProgress);
 
 // ---------- theme ----------
 // The choice is the reader's, so it persists across visits.
