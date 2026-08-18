@@ -56,6 +56,9 @@
         <button id="stop" class="px-3 py-1.5 rounded bg-[#1e2422] hover:bg-[#2a3230]">■</button>
         <div class="flex gap-1 ml-auto" id="rates"></div>
       </div>
+
+      <nav id="topicnav" class="mt-2 flex gap-1.5 overflow-x-auto font-sans text-xs pb-0.5"
+           aria-label="主題導覽"></nav>
     </div>
   </header>
 
@@ -115,12 +118,75 @@ async function show(i) {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });
+    buildTopicNav();
     window.scrollTo({ top: 0 });
     history.replaceState(null, '', '#' + briefs[idx].date);
   } catch (e) {
     contentEl.innerHTML = '<p class="text-red-400">讀取失敗：' + e.message + '</p>';
   }
 }
+
+// ---------- topic navigation ----------
+// Built from the rendered H2s, so it follows whatever topics the brief
+// actually contains rather than a hard-coded list.
+const topicNav = document.getElementById('topicnav');
+let sections = [];
+
+function shortLabel(text) {
+  // 「主題一：兩岸關係」-> 「兩岸關係」; other headings keep their own text
+  const m = text.match(/^主題[一二三四五六七八九十]+[：:]\s*(.+)$/);
+  return m ? m[1] : text;
+}
+
+function buildTopicNav() {
+  sections = [];
+  topicNav.innerHTML = '';
+  const heads = contentEl.querySelectorAll('h2');
+  if (!heads.length) { topicNav.classList.add('hidden'); return; }
+  topicNav.classList.remove('hidden');
+
+  heads.forEach(function (h, i) {
+    h.id = 'sec-' + i;
+    const btn = document.createElement('button');
+    btn.textContent = shortLabel(h.textContent.trim());
+    btn.dataset.target = i;
+    btn.className = 'shrink-0 px-2.5 py-1 rounded bg-[#1e2422] hover:bg-[#2a3230] whitespace-nowrap';
+    btn.onclick = function () {
+      const top = h.getBoundingClientRect().top + window.scrollY
+                - document.querySelector('header').offsetHeight - 8;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    };
+    topicNav.appendChild(btn);
+    sections.push({ el: h, btn: btn });
+  });
+  paintActiveTopic();
+}
+
+function paintActiveTopic() {
+  if (!sections.length) return;
+  const line = document.querySelector('header').offsetHeight + 16;
+  let active = 0;
+  sections.forEach(function (s, i) {
+    if (s.el.getBoundingClientRect().top <= line) active = i;
+  });
+  sections.forEach(function (s, i) {
+    s.btn.className = 'shrink-0 px-2.5 py-1 rounded whitespace-nowrap ' +
+      (i === active ? 'bg-[#004030] text-white' : 'bg-[#1e2422] hover:bg-[#2a3230]');
+  });
+  // keep the active chip visible in the scrolling strip
+  const a = sections[active].btn;
+  const nl = topicNav.scrollLeft, nr = nl + topicNav.clientWidth;
+  if (a.offsetLeft < nl || a.offsetLeft + a.offsetWidth > nr) {
+    topicNav.scrollTo({ left: a.offsetLeft - 12, behavior: 'smooth' });
+  }
+}
+
+let navTick = false;
+window.addEventListener('scroll', function () {
+  if (navTick) return;
+  navTick = true;
+  requestAnimationFrame(function () { paintActiveTopic(); navTick = false; });
+}, { passive: true });
 
 prevBtn.onclick = function () { show(idx + 1); };
 nextBtn.onclick = function () { show(idx - 1); };
