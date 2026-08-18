@@ -1,6 +1,6 @@
 {
-  "name": "實踐晨報 KH USC IBM's Daily Brief",
-  "short_name": "實踐晨報",
+  "name": "實踐國企晨報 KH USC IBM's Daily Brief",
+  "short_name": "實踐國企晨報",
   "description": "每日巡檢：兩岸、東南亞、日本、無人載具、人工智慧、財稅與會計政策。",
   "start_url": "./index.html",
   "scope": "./",

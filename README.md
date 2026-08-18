@@ -1,4 +1,4 @@
-# 實踐晨報 · KH USC IBM's Daily Brief
+# 實踐國企晨報 · KH USC IBM's Daily Brief
 
 每日巡檢六大主題並產出一份晨報：兩岸、東南亞、日本、無人載具、人工智慧、財稅與會計政策。
 
@@ -70,4 +70,4 @@ git add . && git commit -m "brief: YYYY-MM-DD" && git push
 
 ---
 
-實踐大學高雄校區 國際企業經營學系
+實踐大學高雄校區 國際企業管理學系
