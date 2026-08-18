@@ -68,7 +68,14 @@
     }
   }
 
+  /* 漲紅跌綠：台灣與東亞慣例，六個指數一律適用，不因美股原地慣例而分歧 */
+  :root { --up:#c8102e; --down:#00794d; }
+  :root[data-skin="ink"], :root[data-skin="navy"], :root[data-skin="warm"] { --up:#ff6b6b; --down:#3fbf8f; }
+  @media (prefers-color-scheme: dark) { :root[data-skin="auto"] { --up:#ff6b6b; --down:#3fbf8f; } }
+
   body { font-family:'Noto Serif TC','Inter',ui-serif,serif; background:var(--bg); color:var(--tx); }
+  td.up { color:var(--up); font-weight:600; }
+  td.down { color:var(--down); font-weight:600; }
   .hdr { background:color-mix(in srgb, var(--bg) 92%, transparent); border-bottom:1px solid var(--line); }
   .btn { background:var(--chip); color:var(--tx); }
   .btn:hover { background:var(--chip-h); }
@@ -203,6 +210,7 @@ async function show(i) {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });
+    colourMarketTable();
     groupIntoCards();
     buildTopicNav();
     window.scrollTo({ top: 0 });
@@ -212,6 +220,24 @@ async function show(i) {
   } catch (e) {
     contentEl.innerHTML = '<p style="color:var(--strong)">讀取失敗：' + e.message + '</p>';
   }
+}
+
+// ---------- market table ----------
+// Colour the change columns 漲紅跌綠. Applies to the first table only, which is
+// the market block; later tables (the tracking list) are left alone.
+function colourMarketTable() {
+  const t = contentEl.querySelector('table');
+  if (!t) return;
+  const heads = [...t.querySelectorAll('th')].map(h => h.textContent.trim());
+  if (!heads.some(h => /漲跌|幅度/.test(h))) return;   // not the market table
+  t.querySelectorAll('tr').forEach(function (tr) {
+    tr.querySelectorAll('td').forEach(function (td, i) {
+      if (!/漲跌|幅度/.test(heads[i] || '')) return;
+      const v = td.textContent.trim();
+      if (/^\+/.test(v)) td.className = 'up';
+      else if (/^[-−]/.test(v)) td.className = 'down';
+    });
+  });
 }
 
 // ---------- cards ----------

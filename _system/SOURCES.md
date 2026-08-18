@@ -36,16 +36,20 @@
 
 原 The Diplomat、ASEAN 官方、菲律賓海岸防衛隊三站因 WAF 阻擋（403／307）於 2026-08-18 移除。
 
-## 日本
+## 日／韓
+
+本主題每日只寫一則，取日韓兩國當日最重要的國際新聞或經貿動態。
 
 | 來源 | 網址 | 備註 |
 |---|---|---|
-| 防衛省報道発表 | https://www.mod.go.jp/j/press/news/index.html | 官方，8 月內容曾未載入 |
-| Japan Times | https://www.japantimes.co.jp/feed/topstories/ | RSS。HTML 版回 403，改用 feed |
+| Japan Times | https://www.japantimes.co.jp/feed/topstories/ | RSS 回 200 但**內容為 2025 年舊快取，實測無 2026 年條目**；HTML 版 403。暫不可用，保留待其恢復 |
 | 共同通信 | https://english.kyodonews.net/ | 通訊社。RSS 路徑 404，暫用首頁 |
-| Nikkei Asia | https://asia.nikkei.com/ | 經濟安保 |
+| Nikkei Asia | https://asia.nikkei.com/ | 日本經貿與供應鏈 |
+| 韓聯社 Yonhap（英文） | https://en.yna.co.kr/ | 韓國通訊社 |
+| Korea Herald | https://www.koreaherald.com/ | 韓媒，具署名 |
+| 防衛省報道発表 | https://www.mod.go.jp/j/press/news/index.html | 官方，8 月內容曾未載入 |
 
-原外務省（403）與 NHK 政治（工具層阻擋）於 2026-08-18 移除。
+原外務省（403）與 NHK 政治（工具層阻擋）於 2026-08-18 移除。同日新增韓國兩個來源。
 
 ## 無人載具
 
@@ -76,6 +80,17 @@
 | EY Tax News | https://taxnews.ey.com/ | 具署名專業媒體，作為國際稅改指標來源；見到重要變動再回查 OECD 官方 PDF |
 | 會計研究發展基金會 | https://www.ardf.org.tw/ | 公報 |
 
+## 核能產業
+
+| 來源 | 網址 | 備註 |
+|---|---|---|
+| 核能安全委員會 | https://www.nusc.gov.tw/news/headline.html | 台灣主管機關，含機組運轉狀態與檢查報告 |
+| 原子力産業新聞（JAIF） | https://www.jaif.or.jp/journal/news/ | 日本原子力産業協會，日本與國際核能產業動態 |
+| World Nuclear News | https://www.world-nuclear-news.org/ | 產業媒體，新建與 SMR 進展 |
+| IAEA News | https://www.iaea.org/news | 國際原子能總署官方 |
+
+JAIF 的 RSS（`https://www.jaif.or.jp/feed`）回 200 但無 `<item>` 條目，不可用；請直接解析 HTML 列表頁。
+
 ---
 
 ## 選用模組：World Monitor（預設關閉）
@@ -94,4 +109,5 @@
 ## 來源調整紀錄
 
 - 2026-08-18：建立初始清單，共 26 個固定巡檢網址。
+- 2026-08-18：新增核能產業四個來源（核安會、JAIF、World Nuclear News、IAEA）。
 - 2026-08-18：主題一由「兩岸」改為「國際企業」，改以 Yahoo 股市三支 RSS 為主力。移除九個長期失效來源：陸委會（403）、國台辦（編碼損毀）、外務省（403）、NHK 政治（工具層阻擋）、The Diplomat 東南亞（403）、ASEAN 官方（307）、菲律賓海岸防衛隊（403）、OECD 稅務（403）、歐盟 AI Act 站（網域不存在且原非官方站）。各以可抓取的具署名替代來源補上。
