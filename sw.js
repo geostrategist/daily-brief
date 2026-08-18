@@ -1,6 +1,6 @@
-// Cache the shell; always go to the network for brief content so new
-// editions are never served stale.
-const SHELL = 'brief-shell-v1';
+// Cache the shell for offline use, but never let a cached shell win over a
+// newer deploy: the shell is network-first too, with the cache as fallback.
+const SHELL = 'brief-shell-v2';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
@@ -33,6 +33,14 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // shell: cache first
-  e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request)));
+  // shell: network first, fall back to cache when offline
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        const copy = res.clone();
+        caches.open(SHELL).then(c => c.put(e.request, copy));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });
