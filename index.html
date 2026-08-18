@@ -21,35 +21,35 @@
     --bg:#f7f4ed; --tx:#1f1c18; --mut:#6b6459; --line:#ddd6c8;
     --acc:#1c3f6e; --acc-h:#16345c; --acc-fg:#fff; --link:#1c3f6e; --link-h:#2d5a94;
     --strong:#8c2f1f; --chip:#e9e3d6; --chip-h:#ded7c8; --th:#efe9dc; --mark:#dfe7f1;
-    --head:#1c3f6e;
+    --head:#1c3f6e; --card:#fffdf8;
   }
   :root[data-skin="ink"] {                  /* 深墨綠 */
     color-scheme: dark;
     --bg:#121212; --tx:#e8e6e1; --mut:#8a9490; --line:#2f3a36;
     --acc:#004030; --acc-h:#005a44; --acc-fg:#fff; --link:#7fd1b9; --link-h:#a8e6d4;
     --strong:#fff; --chip:#1e2422; --chip-h:#2a3230; --th:#1a201e; --mark:#004030;
-    --head:#7fd1b9;
+    --head:#7fd1b9; --card:#181a19;
   }
   :root[data-skin="navy"] {                 /* 學術藏青 */
     color-scheme: dark;
     --bg:#141b2b; --tx:#e4e6ec; --mut:#8c94a8; --line:#2a3348;
     --acc:#e8c37a; --acc-h:#d9ae5c; --acc-fg:#141b2b; --link:#e8c37a; --link-h:#f2d79b;
     --strong:#fff; --chip:#1c2438; --chip-h:#252f47; --th:#1a2234; --mark:#2a3348;
-    --head:#e8c37a;
+    --head:#e8c37a; --card:#1a2133;
   }
   :root[data-skin="warm"] {                 /* 暖灰單色 */
     color-scheme: dark;
     --bg:#1a1917; --tx:#e5e2dc; --mut:#8f8a80; --line:#33312d;
     --acc:#b8632a; --acc-h:#a3551f; --acc-fg:#fff; --link:#d8834a; --link-h:#e8a274;
     --strong:#fff; --chip:#232220; --chip-h:#2e2c29; --th:#211f1d; --mark:#3a2f26;
-    --head:#d8834a;
+    --head:#d8834a; --card:#201f1c;
   }
   :root[data-skin="crimson"] {              /* 校色紅 */
     color-scheme: light;
     --bg:#fdfcfb; --tx:#191919; --mut:#6e6a67; --line:#e2dedb;
     --acc:#9b1b23; --acc-h:#84161d; --acc-fg:#fff; --link:#9b1b23; --link-h:#c02730;
     --strong:#191919; --chip:#f0ecea; --chip-h:#e5e0dd; --th:#f5f2f0; --mark:#f6e0e1;
-    --head:#9b1b23;
+    --head:#9b1b23; --card:#ffffff;
   }
   /* 隨系統：淺色用報紙白、深色用深墨綠 */
   :root[data-skin="auto"] {
@@ -57,14 +57,14 @@
     --bg:#f7f4ed; --tx:#1f1c18; --mut:#6b6459; --line:#ddd6c8;
     --acc:#1c3f6e; --acc-h:#16345c; --acc-fg:#fff; --link:#1c3f6e; --link-h:#2d5a94;
     --strong:#8c2f1f; --chip:#e9e3d6; --chip-h:#ded7c8; --th:#efe9dc; --mark:#dfe7f1;
-    --head:#1c3f6e;
+    --head:#1c3f6e; --card:#fffdf8;
   }
   @media (prefers-color-scheme: dark) {
     :root[data-skin="auto"] {
       --bg:#121212; --tx:#e8e6e1; --mut:#8a9490; --line:#2f3a36;
       --acc:#004030; --acc-h:#005a44; --acc-fg:#fff; --link:#7fd1b9; --link-h:#a8e6d4;
       --strong:#fff; --chip:#1e2422; --chip-h:#2a3230; --th:#1a201e; --mark:#004030;
-      --head:#7fd1b9;
+      --head:#7fd1b9; --card:#181a19;
     }
   }
 
@@ -91,6 +91,15 @@
                        display:block; overflow-x:auto; font-variant-numeric:tabular-nums; }
   .prose-brief th, .prose-brief td { border:1px solid var(--line); padding:.5rem .7rem; text-align:left; }
   .prose-brief th { background:var(--th); }
+  /* Each news item becomes a card: the H3 headline plus everything up to the
+     next heading. Built at render time so the Markdown stays plain text. */
+  .card { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--head);
+          border-radius:4px; padding:1rem 1.15rem; margin:1.1rem 0; }
+  .card > h3 { margin-top:0 !important; }
+  .card > :last-child { margin-bottom:0; }
+  .card ul { margin:.7rem 0 0; padding-left:1.1rem; font-size:.88rem; }
+  .card ul li { color:var(--mut); }
+  .card ul li strong { color:var(--mut); }
   .speaking { background:var(--mark); border-radius:.25rem; }
   ::selection { background:var(--mark); }
   :focus-visible { outline:2px solid var(--link); outline-offset:2px; }
@@ -194,6 +203,7 @@ async function show(i) {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });
+    groupIntoCards();
     buildTopicNav();
     window.scrollTo({ top: 0 });
     document.getElementById('hdrdate').textContent =
@@ -202,6 +212,25 @@ async function show(i) {
   } catch (e) {
     contentEl.innerHTML = '<p style="color:var(--strong)">讀取失敗：' + e.message + '</p>';
   }
+}
+
+// ---------- cards ----------
+// Wrap every H3 and the nodes that follow it, up to the next heading or rule,
+// so each news item reads as one contained unit.
+function groupIntoCards() {
+  contentEl.querySelectorAll('h3').forEach(function (h) {
+    if (h.parentElement !== contentEl) return;          // already wrapped
+    const card = document.createElement('section');
+    card.className = 'card';
+    h.parentNode.insertBefore(card, h);
+    card.appendChild(h);                                // the headline itself
+    let n = card.nextElementSibling;                    // then its body
+    while (n && !/^(H1|H2|H3|HR)$/.test(n.tagName)) {
+      const next = n.nextElementSibling;
+      card.appendChild(n);
+      n = next;
+    }
+  });
 }
 
 // ---------- topic navigation ----------
