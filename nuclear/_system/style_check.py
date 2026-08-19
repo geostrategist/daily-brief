@@ -147,7 +147,8 @@ def check(text):
     # and the inspection-summary labels. Only prose colons beyond those count.
     prescribed = (r"(一句話摘要|待查核|今天真正改變了什麼|最重要的三件事|可能受影響"
                   r"|對台灣的意義|歷史比對|安全聲明|來源篩選|來源品質問題|提示注入"
-                  r"|完全失敗[^：]*|部分失敗[^：]*|單位核對|範圍|優先訊號|刻意排除)：")
+                  r"|完全失敗[^：]*|部分失敗[^：]*|單位核對|金額核對|規範編號|機組核對"
+                  r"|觸發條件|範圍|優先訊號|刻意排除|來源)：")
     # One lede plus one caveat line per item already accounts for most of them,
     # so the threshold scales with the number of items rather than being fixed.
     items = max(1, len(re.findall(r"^### \d+\.", prose, re.M)))
