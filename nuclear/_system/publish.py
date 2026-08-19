@@ -21,6 +21,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import style_check
+
 if hasattr(sys.stdout, "reconfigure"):          # Windows consoles default to cp950
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):          # SystemExit messages go to stderr
@@ -56,8 +58,9 @@ def drafts_waiting():
 def check_draft(path):
     """Surface the problems worth catching before a brief goes public.
 
-    Advisory only — the brief is a judgement call and this cannot make it. It
-    flags the mechanical failures that are embarrassing once published.
+    Advisory only. The brief is a judgement call and this cannot make it; it
+    flags the mechanical failures that are embarrassing once published, plus the
+    prose habits ruled out by EDITORIAL.md section 13.
     """
     text = path.read_text(encoding="utf-8")
     warn = []
@@ -92,6 +95,7 @@ def check_draft(path):
     if len(text) < 2000:
         warn.append(f"全文僅 {len(text)} 字元，偏短，確認是否被截斷")
 
+    warn.extend(style_check.check(text))       # EDITORIAL.md 第十三節
     return warn
 
 
@@ -152,7 +156,7 @@ def main():
             print(f"  ⚠ {w}")
         print("  （以上為提醒，不阻擋發布）")
     else:
-        print("檢查：固定欄位、來源等級、待查核、規範編號均無異常。")
+        print("檢查：固定欄位、來源等級、待查核、規範編號、文體均無異常。")
 
     print(f"\n將執行：")
     print(f"  1. 複製到 nuclear/briefs/{draft.name}")
