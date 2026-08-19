@@ -2,3 +2,6 @@
 Thumbs.db
 *.tmp
 _system/private/
+
+# 核能晨報的每日草稿：本機八點產出，人工過目後才由 publish.py 搬進 briefs/ 並 push
+nuclear/_drafts/
