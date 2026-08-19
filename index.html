@@ -274,13 +274,16 @@ async function show(i) {
 }
 
 // ---------- market table ----------
-// Colour the change columns 漲紅跌綠. Applies to the first table only, which is
-// the market block; later tables (the tracking list) are left alone.
+// Colour the change columns 漲紅跌綠. Identify the market table by its headers
+// rather than by position: the digest now opens with a calendar table, so the
+// market block is no longer the first table in the document. Other tables (the
+// calendar, the tracking list) are left alone.
 function colourMarketTable() {
-  const t = contentEl.querySelector('table');
+  const heads0 = t => [...t.querySelectorAll('th')].map(h => h.textContent.trim());
+  const t = [...contentEl.querySelectorAll('table')]
+    .find(x => heads0(x).some(h => /漲跌|幅度/.test(h)));
   if (!t) return;
-  const heads = [...t.querySelectorAll('th')].map(h => h.textContent.trim());
-  if (!heads.some(h => /漲跌|幅度/.test(h))) return;   // not the market table
+  const heads = heads0(t);
   t.querySelectorAll('tr').forEach(function (tr) {
     tr.querySelectorAll('td').forEach(function (td, i) {
       if (!/漲跌|幅度/.test(heads[i] || '')) return;
