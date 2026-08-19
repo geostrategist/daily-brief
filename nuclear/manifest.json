@@ -1,0 +1,33 @@
+{
+  "name": "核能晨報 Nuclear Daily Brief",
+  "short_name": "核能晨報",
+  "description": "每日巡檢台灣核能爭議、全球核電與 SMR、日本重啟、歐洲、南韓、美國核安與核燃料產業鏈。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#141b2b",
+  "theme_color": "#141b2b",
+  "lang": "zh-Hant",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "../icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

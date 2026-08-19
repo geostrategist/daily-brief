@@ -1,11 +1,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>實踐國企晨報 · KH USC IBM's Daily Brief</title>
-<meta name="description" content="每日巡檢：國際企業、東南亞、日本、無人載具、人工智慧、財稅與會計政策，附前一日市場。">
-<meta name="theme-color" content="#f7f4ed">
+<title>核能晨報 · Nuclear Daily Brief</title>
+<meta name="description" content="每日巡檢台灣核能爭議、全球核電與 SMR、日本重啟、歐洲、南韓、美國核安與核燃料產業鏈。">
+<meta name="theme-color" content="#141b2b">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="../icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -76,6 +76,8 @@
   body { font-family:'Noto Serif TC','Inter',ui-serif,serif; background:var(--bg); color:var(--tx); }
   td.up { color:var(--up); font-weight:600; }
   td.down { color:var(--down); font-weight:600; }
+  td.changed { color:var(--up); font-weight:600; }
+  td.same { color:var(--mut); }
   .hdr { background:color-mix(in srgb, var(--bg) 92%, transparent); border-bottom:1px solid var(--line); }
   .btn { background:var(--chip); color:var(--tx); }
   .btn:hover { background:var(--chip-h); }
@@ -163,7 +165,7 @@
 
       <!-- one row: brand, date, read-aloud, speed, theme -->
       <div class="flex items-center gap-2 flex-wrap font-sans text-xs">
-        <h1 class="text-base font-bold shrink-0" style="font-family:'Noto Serif TC',serif">實踐國企晨報</h1>
+        <h1 class="text-base font-bold shrink-0" style="font-family:'Noto Serif TC',serif">核能晨報</h1>
         <span id="hdrdate" class="muted shrink-0"></span>
 
         <button id="play" class="btn-on px-2.5 py-1 rounded shrink-0">▶ 朗讀</button>
@@ -205,8 +207,8 @@
   </main>
 
   <footer class="py-6 text-center text-xs muted font-sans px-4" style="border-top:1px solid var(--line)">
-    <p>本報彙整公開資訊，非投資或決策建議。</p>
-    <p class="mt-1"><a href="nuclear/" style="color:var(--link)">核能晨報 →</a></p>
+    <p>本報彙整公開資訊，非投資或決策建議。本報不倡議擁核或反核，只報事實與其後果。</p>
+    <p class="mt-1"><a href="../" style="color:var(--link)">← 實踐國企晨報（母站）</a></p>
     <p class="mt-1">實踐大學高雄校區 國際企業管理學系</p>
   </footer>
 </div>
@@ -260,7 +262,7 @@ async function show(i) {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });
-    colourMarketTable();
+    colourStatusTable();
     groupIntoCards();
     styleDigest();
     paintProgress();
@@ -274,23 +276,23 @@ async function show(i) {
   }
 }
 
-// ---------- market table ----------
-// Colour the change columns 漲紅跌綠. Identify the market table by its headers
-// rather than by position: the digest now opens with a calendar table, so the
-// market block is no longer the first table in the document. Other tables (the
-// calendar, the tracking list) are left alone.
-function colourMarketTable() {
+// ---------- reactor status table ----------
+// The nuclear brief opens with 機組狀態速覽 rather than a market table. Mark the
+// 較昨日 column so a state change reads at a glance and an unchanged row recedes.
+// Identified by its headers, never by position: the digest opens with a
+// calendar table, so this is not the first table in the document.
+function colourStatusTable() {
   const heads0 = t => [...t.querySelectorAll('th')].map(h => h.textContent.trim());
   const t = [...contentEl.querySelectorAll('table')]
-    .find(x => heads0(x).some(h => /漲跌|幅度/.test(h)));
+    .find(x => heads0(x).some(h => /較昨日/.test(h)));
   if (!t) return;
   const heads = heads0(t);
   t.querySelectorAll('tr').forEach(function (tr) {
     tr.querySelectorAll('td').forEach(function (td, i) {
-      if (!/漲跌|幅度/.test(heads[i] || '')) return;
+      if (!/較昨日/.test(heads[i] || '')) return;
       const v = td.textContent.trim();
-      if (/^\+/.test(v)) td.className = 'up';
-      else if (/^[-−]/.test(v)) td.className = 'down';
+      if (v === '—' || v === '-' || v === '') td.className = 'same';
+      else td.className = 'changed';
     });
   });
 }
@@ -327,9 +329,9 @@ function extractGrade(card) {
   const b = document.createElement('span');
   b.className = 'grade g-' + m[1];
   b.textContent = m[1];
-  b.title = { A: '官方文件、法規原文、公司重訊、通訊社直發',
-              B: '具署名的專業媒體',
-              C: '二手轉載或未署名報導' }[m[1]];
+  b.title = { A: '管制機關文件、法規原文、電力公司重訊、IAEA 官方文件、通訊社直發',
+              B: '具署名的專業媒體（WNN、ANS、NucNet、韓聯社、JAIF）',
+              C: '二手轉載、未署名報導、產業協會之立場性宣稱' }[m[1]];
   h.insertBefore(b, h.firstChild);
 }
 
@@ -597,7 +599,7 @@ window.addEventListener('resize', paintProgress);
 // ---------- theme ----------
 // The choice is the reader's, so it persists across visits.
 const skinSel = document.getElementById('skin');
-const SKIN_KEY = 'brief-skin';
+const SKIN_KEY = 'nuclear-skin';   // namespaced: both sites share one origin
 
 function applySkin(v) {
   document.documentElement.dataset.skin = v;
@@ -615,7 +617,7 @@ skinSel.onchange = function () {
 
 (function initSkin() {
   let v = 'news';
-  try { v = localStorage.getItem(SKIN_KEY) || 'news'; } catch (e) {}
+  try { v = localStorage.getItem(SKIN_KEY) || 'navy'; } catch (e) {}
   if (!skinSel.querySelector('option[value="' + v + '"]')) v = 'news';
   skinSel.value = v;
   applySkin(v);
