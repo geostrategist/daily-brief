@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>核能晨報 · Nuclear Daily Brief</title>
-<meta name="description" content="每日巡檢台灣核能爭議、全球核電與 SMR、日本重啟、歐洲、南韓、美國核安與核燃料產業鏈。">
+<meta name="description" content="每日巡檢核能動態，依核子安全、核子保安、核子保防三個規範體系分節，附機組狀態速覽與未來事件行事曆。">
 <meta name="theme-color" content="#141b2b">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="../icons/favicon.svg" type="image/svg+xml">
@@ -68,6 +68,16 @@
     }
   }
 
+  /* 三個規範欄位各有定色。核子安全、保安、保防是不同的規範體系，不是同一件事的三種說法，
+     配色的作用是讓讀者每天看見同一組區分。 */
+  :root { --safety:#1c6b4a; --security:#8c2f1f; --safeg:#5b4b8a; --industry:#6b6459; }
+  :root[data-skin="ink"], :root[data-skin="navy"], :root[data-skin="warm"] {
+    --safety:#4fb98a; --security:#e08573; --safeg:#a99ae0; --industry:#8a9490;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-skin="auto"] { --safety:#4fb98a; --security:#e08573; --safeg:#a99ae0; --industry:#8a9490; }
+  }
+
   /* 漲紅跌綠：台灣與東亞慣例，六個指數一律適用，不因美股原地慣例而分歧 */
   :root { --up:#c8102e; --down:#00794d; }
   :root[data-skin="ink"], :root[data-skin="navy"], :root[data-skin="warm"] { --up:#ff6b6b; --down:#3fbf8f; }
@@ -102,6 +112,13 @@
   .prose-brief th { background:var(--th); }
   /* Each news item becomes a card: the H3 headline plus everything up to the
      next heading. Built at render time so the Markdown stays plain text. */
+  /* a section paints its own accent onto the H2 and every card inside it */
+  .prose-brief h2[data-regime] { border-bottom-color:var(--regime); color:var(--regime); }
+  .prose-brief h2[data-regime]::before {
+    content:''; display:inline-block; width:.55rem; height:.55rem; border-radius:2px;
+    background:var(--regime); margin-right:.5rem; vertical-align:.08em;
+  }
+  section.card[data-regime] { border-left-color:var(--regime); }
   .card { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--head);
           border-radius:4px; padding:1rem 1.15rem; margin:1.1rem 0; }
   .card > h3 { margin-top:0 !important; }
@@ -135,6 +152,15 @@
   .digest { border:1px solid var(--line); border-top:3px solid var(--head); background:var(--card);
             padding:1rem 1.15rem; margin:0 0 1.6rem; }
   .digest h2 { margin:0 0 .6rem !important; border:0 !important; padding:0 !important; font-size:1.05rem; }
+
+  /* legend: the three regimes, defined once at the top of every brief */
+  .legend { display:flex; flex-wrap:wrap; gap:.5rem; margin:0 0 1.6rem;
+            font-family:ui-sans-serif,system-ui,sans-serif; font-size:.7rem; }
+  .legend b { display:inline-flex; align-items:center; gap:.35rem; font-weight:600;
+              border:1px solid var(--line); background:var(--card);
+              border-radius:999px; padding:.25rem .6rem; }
+  .legend b i { width:.5rem; height:.5rem; border-radius:2px; font-style:normal; }
+  .legend span { color:var(--mut); font-weight:400; }
 
   /* reading progress + back to top */
   #bar { position:fixed; top:0; left:0; height:2px; background:var(--head); z-index:40; width:0; }
@@ -265,6 +291,8 @@ async function show(i) {
     colourStatusTable();
     groupIntoCards();
     styleDigest();
+    paintRegimes();
+    buildLegend();
     paintProgress();
     buildTopicNav();
     window.scrollTo({ top: 0 });
@@ -295,6 +323,60 @@ function colourStatusTable() {
       else td.className = 'changed';
     });
   });
+}
+
+// ---------- regimes ----------
+// 核子安全、核子保安、核子保防 are three distinct regulatory regimes with different
+// legal bases — safeguards derive from agreements, security from a national threat
+// assessment, and neither adds to nor subtracts from the other. The brief keeps them
+// in separate sections; the page gives each its own colour so the distinction is
+// visible before a word is read. Matched on the heading text, so a brief that omits
+// a section simply renders without that colour rather than breaking.
+const REGIMES = [
+  { key: 'safety',   test: /核子安全/,   label: '核子安全', en: 'safety',     hint: '針對意外與失效' },
+  { key: 'security', test: /核子保安/,   test2: /保安/, label: '核子保安', en: 'security', hint: '針對惡意行為者' },
+  { key: 'safeg',    test: /核子保防/,   label: '核子保防', en: 'safeguards', hint: '針對移作他用' },
+  { key: 'industry', test: /核能相關動態/, label: '相關動態', en: '', hint: '產業與政策面' }
+];
+
+function regimeOf(text) {
+  for (const r of REGIMES) if (r.test.test(text)) return r;
+  return null;
+}
+
+// Paint each H2 and every card beneath it with that section's accent.
+function paintRegimes() {
+  contentEl.querySelectorAll('h2').forEach(function (h) {
+    const r = regimeOf(h.textContent);
+    if (!r) return;
+    h.dataset.regime = r.key;
+    h.style.setProperty('--regime', 'var(--' + r.key + ')');
+    for (let n = h.nextElementSibling; n && n.tagName !== 'H2'; n = n.nextElementSibling) {
+      if (n.classList && n.classList.contains('card')) {
+        n.dataset.regime = r.key;
+        n.style.setProperty('--regime', 'var(--' + r.key + ')');
+      }
+    }
+  });
+}
+
+// The legend defines the three regimes once per brief, directly under the digest.
+// Only the regimes actually present are listed, so it never promises a section
+// the brief does not contain.
+function buildLegend() {
+  const present = REGIMES.filter(function (r) {
+    return [...contentEl.querySelectorAll('h2')].some(function (h) { return r.test.test(h.textContent); });
+  }).filter(function (r) { return r.key !== 'industry'; });
+  if (present.length < 2) return;                 // a legend for one item explains nothing
+  const box = document.createElement('div');
+  box.className = 'legend';
+  box.innerHTML = present.map(function (r) {
+    return '<b><i style="background:var(--' + r.key + ')"></i>' + r.label +
+           '<span>' + r.hint + '</span></b>';
+  }).join('');
+  const digest = contentEl.querySelector('.digest');
+  if (digest) digest.insertAdjacentElement('afterend', box);
+  else contentEl.insertBefore(box, contentEl.firstChild);
 }
 
 // ---------- cards ----------
@@ -408,7 +490,7 @@ const topicNav = document.getElementById('topicnav');
 let sections = [];
 
 function shortLabel(text) {
-  // 「主題一：國際企業」-> 「國際企業」; other headings keep their own text
+  // 「主題一：國際企業」-> 「國際企業」（母站遺留格式）; other headings keep their own text
   const m = text.match(/^主題[一二三四五六七八九十]+[：:]\s*(.+)$/);
   return m ? m[1] : text;
 }
@@ -430,6 +512,10 @@ function buildTopicNav() {
     btn.textContent = shortLabel(h.textContent.trim()) + (n ? ' ' + n : '');
     btn.dataset.target = i;
     btn.className = 'btn shrink-0 px-2.5 py-1 rounded whitespace-nowrap';
+    const r = regimeOf(h.textContent);
+    if (r) {                                  // regime sections carry their colour into the nav
+      btn.style.borderLeft = '3px solid var(--' + r.key + ')';
+    }
     btn.onclick = function () {
       const top = h.getBoundingClientRect().top + window.scrollY
                 - document.querySelector('header').offsetHeight - 8;
