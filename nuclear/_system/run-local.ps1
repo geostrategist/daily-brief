@@ -1,96 +1,89 @@
-# 核能晨報 · 本機每日產製
+﻿# Nuclear brief - local daily draft run.
 #
-# 由 Windows 工作排程器在每天早上八點觸發。跑完只會在 nuclear/_drafts/ 留下一份草稿，
-# 不 commit、不 push——上傳與否由人決定，見 publish.py。
+# Fired by Windows Task Scheduler at 08:00. Leaves a draft in nuclear/_drafts/
+# and stops: no commit, no push. Publishing is a separate, human-gated step
+# (see publish.py).
 #
-# 手動測試：
+# This wrapper is deliberately ASCII-only. Windows PowerShell 5.1 mis-decodes
+# non-ASCII script text often enough that Chinese string literals here break the
+# parser; all Chinese lives in the files this script reads, never inline.
+#
+# Manual test:
 #   powershell -ExecutionPolicy Bypass -File nuclear\_system\run-local.ps1
 #   powershell -ExecutionPolicy Bypass -File nuclear\_system\run-local.ps1 -Date 20260820
 
 param(
-    [string]$Date = ""              # YYYYMMDD，省略則用今天
+    [string]$Date = ""              # YYYYMMDD; defaults to today
 )
 
 $ErrorActionPreference = "Stop"
 
-$repo    = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)   # …\09_daily_brief
-$drafts  = Join-Path $repo "nuclear\_drafts"
-$logs    = Join-Path $drafts "logs"
-if (-not (Test-Path $drafts)) { New-Item -ItemType Directory -Path $drafts  | Out-Null }
-if (-not (Test-Path $logs))   { New-Item -ItemType Directory -Path $logs    | Out-Null }
+$repo   = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)   # ...\09_daily_brief
+$drafts = Join-Path $repo "nuclear\_drafts"
+$logs   = Join-Path $drafts "logs"
+foreach ($d in @($drafts, $logs)) {
+    if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d | Out-Null }
+}
 
 if ([string]::IsNullOrWhiteSpace($Date)) { $Date = Get-Date -Format "yyyyMMdd" }
-$stamp   = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$draft   = Join-Path $drafts "Brief_$Date.md"
-$log     = Join-Path $logs   "$Date.log"
+$draft = Join-Path $drafts "Brief_$Date.md"
+$log   = Join-Path $logs   "$Date.log"
 
-"[$stamp] 開始產製 $Date" | Tee-Object -FilePath $log
+function Say($msg) {
+    $line = "[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $msg
+    Write-Output $line
+    Add-Content -Path $log -Value $line -Encoding UTF8
+}
 
-# 草稿已存在就不覆蓋——避免排程重跑蓋掉已經看過或改過的稿子。
-# 要重跑先自行刪除該檔。
+Say "start $Date"
+
+# Never clobber an existing draft: a scheduler re-run must not overwrite a draft
+# already reviewed or hand-edited. Delete the file to force a rebuild.
 if (Test-Path $draft) {
-    "[$stamp] 草稿已存在，略過：$draft" | Tee-Object -FilePath $log -Append
-    "   要重跑請先刪除該檔。" | Tee-Object -FilePath $log -Append
+    Say "draft exists, skipping: $draft"
     exit 0
 }
 
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
-if (-not $claude) {
-    "[$stamp] 找不到 claude CLI，中止。" | Tee-Object -FilePath $log -Append
-    exit 1
+if (-not $claude) { Say "claude CLI not found on PATH"; exit 1 }
+
+$promptFile   = Join-Path $repo "nuclear\_system\DAILY_PROMPT.md"
+$overrideFile = Join-Path $repo "nuclear\_system\LOCAL_OVERRIDE.md"
+foreach ($f in @($promptFile, $overrideFile)) {
+    if (-not (Test-Path $f)) { Say "missing prompt file: $f"; exit 1 }
 }
 
-# 指令原文放在 DAILY_PROMPT.md，與雲端版共用同一份規範。
-# 此處只覆寫「寫到哪裡」與「不要 push」兩件事。
-$promptFile = Join-Path $repo "nuclear\_system\DAILY_PROMPT.md"
-if (-not (Test-Path $promptFile)) {
-    "[$stamp] 找不到 DAILY_PROMPT.md，中止。" | Tee-Object -FilePath $log -Append
-    exit 1
-}
-$basePrompt = Get-Content $promptFile -Raw -Encoding UTF8
+# The shared spec plus the local-run override (draft path, no push).
+# {{DATE}} is the only substitution.
+$prompt = (Get-Content $promptFile -Raw -Encoding UTF8) + "`n`n" +
+          ((Get-Content $overrideFile -Raw -Encoding UTF8) -replace '\{\{DATE\}\}', $Date)
 
-$override = @"
-
----
-
-# 本機執行的覆寫規則（優先於上文）
-
-本次為**本機草稿產製**，不是雲端發布。上文第七步的發布流程**全部不執行**。
-
-1. **寫到 ``nuclear/_drafts/Brief_$Date.md``**，不要寫進 ``nuclear/briefs/``。
-2. **不要執行 rebuild-manifest.py。**
-3. **不要 git add、不要 commit、不要 push。** 這份稿子要先給人看過。
-4. 歷史比對照舊——讀 ``nuclear/briefs/`` 內既有晨報（那是已發布的），
-   另外也讀 ``nuclear/_drafts/`` 內是否有尚未發布的近日草稿，避免與未發布稿重複。
-5. 今天的日期是 **$Date**（台灣時間），直接用，不必再自行推算。
-
-其餘規範（分節、來源等級、待查核、機組識別、單位、規範編號、立場中立、安全規範）
-一律照上文執行，不因為是草稿而放寬。
-"@
-
-$prompt = $basePrompt + $override
+$promptTmp = Join-Path $logs "prompt_$Date.txt"
+Set-Content -Path $promptTmp -Value $prompt -Encoding UTF8
 
 Push-Location $repo
 try {
-    "[$stamp] 呼叫 claude -p …（這一步需要數分鐘）" | Tee-Object -FilePath $log -Append
+    Say "invoking claude -p (several minutes)"
 
-    # --permission-mode acceptEdits：無人看管，不能停在權限詢問
-    # 允許的工具限制在巡檢與寫檔，不給 git 相關能力
-    $prompt | & $claude -p `
-        --permission-mode acceptEdits `
-        --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "WebFetch" "WebSearch" "Bash(python:*)" "Bash(date:*)" "Bash(curl:*)" `
-        2>&1 | Tee-Object -FilePath $log -Append
+    # acceptEdits: unattended, so it must not block on a permission prompt.
+    # Tools are limited to research and file writes - no git.
+    # The prompt goes in on stdin. Passing it positionally lets a bare
+    # multi-word argument be swallowed by the preceding --allowedTools list.
+    $tools = "Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Bash(python:*),Bash(date:*),Bash(curl:*)"
+    Get-Content $promptTmp -Raw -Encoding UTF8 |
+        & $claude -p --permission-mode acceptEdits --allowedTools $tools 2>&1 |
+        ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
 
-    $done = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     if (Test-Path $draft) {
         $kb = [math]::Round((Get-Item $draft).Length / 1KB, 1)
-        "[$done] 完成：$draft（$kb KB）" | Tee-Object -FilePath $log -Append
-        "[$done] 過目後執行：python nuclear\_system\publish.py" | Tee-Object -FilePath $log -Append
+        Say "done: $draft ($kb KB)"
+        Say "review it, then: python nuclear\_system\publish.py $Date"
     } else {
-        "[$done] 跑完但沒有產生草稿檔，請看上面的輸出。" | Tee-Object -FilePath $log -Append
+        Say "run finished but no draft was produced - see log: $log"
         exit 1
     }
 }
 finally {
     Pop-Location
+    Remove-Item $promptTmp -ErrorAction SilentlyContinue
 }

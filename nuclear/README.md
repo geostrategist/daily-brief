@@ -32,16 +32,21 @@ sw.js                   Service Worker，快取名稱與母站分離
 briefs/
   manifest.json         日期索引，新的在最前面
   Brief_YYYYMMDD.md     每日晨報
+_drafts/                每日八點產出的草稿，未發布。已 gitignore
+  logs/                 每次執行的完整輸出
 _system/
   TOPICS.md             八個欄位的設定 — 改這裡就改變隔日版面與巡檢範圍
   SOURCES.md            固定巡檢網址清單（18 個，逐一實測過）
   EDITORIAL.md          編輯規範 — 決定怎麼寫
   REFERENCE.md          規範編號、三者之區分、研究缺口、台灣現況基準
-  DAILY_PROMPT.md       排程 agent 的每日指令原文
+  DAILY_PROMPT.md       每日指令原文（本機與雲端共用）
+  LOCAL_OVERRIDE.md     本機執行時附加的覆寫規則（寫到 _drafts/、不要 push）
+  run-local.ps1         本機八點排程執行的腳本，只產草稿
+  publish.py            過目後發布：搬進 briefs/、重建索引、commit、push
   rebuild-manifest.py   依 briefs/ 內實際檔案重建索引
 ```
 
-五份 `_system/` 設定檔是這個專案的核心。程式碼幾乎不必再動，日常調整都在這些檔案裡。
+`_system/` 的設定檔是這個專案的核心。程式碼幾乎不必再動，日常調整都在這些檔案裡。
 
 ## 八個固定欄位
 
@@ -100,7 +105,64 @@ _system/
 6. `python nuclear/_system/rebuild-manifest.py`
 7. commit 並 push，GitHub Pages 自動發布
 
-**排程**：每日早上八點。母站晨報為七點，兩者錯開以免同時 git push。
+**排程**：每日早上八點，**在本機**跑，產出草稿後停下——不 commit、不 push。
+過目後才由 `publish.py` 發布。母站晨報為七點（雲端），兩者錯開。
+
+## 每日的實際操作
+
+早上八點，Windows 工作排程器會跑 `_system/run-local.ps1`，巡檢 18 個來源、寫出草稿到
+`_drafts/Brief_YYYYMMDD.md`，然後**停在那裡**。網站上不會有任何變化。
+
+看稿：
+
+```bash
+python nuclear/_system/publish.py --list     # 有哪些草稿在等
+```
+
+想看實際排版（而非 Markdown 原始碼），把草稿暫時複製進 `briefs/` 再開本機 server 即可，
+預覽完刪掉；或直接讀 Markdown。
+
+發布：
+
+```bash
+python nuclear/_system/publish.py            # 今天的草稿
+python nuclear/_system/publish.py 20260820   # 指定日期
+python nuclear/_system/publish.py --dry-run  # 只看會做什麼，不動作
+```
+
+`publish.py` 會先跑一輪機械性檢查再問你要不要發：固定欄位是否齊全、每則是否標了來源等級、
+有無「待查核」、有無 TODO 之類的佔位字樣、有沒有用到**已作廢的規範編號**
+（NS-R-1、NS-R-3、GS-R-3、WS-R-5）或「原能會」舊稱、全文是否過短疑似被截斷。
+**這些是提醒，不阻擋發布**——稿子好不好是判斷問題，腳本管不了，它只擋機械性的錯。
+
+確認後才會複製到 `briefs/`、重建索引、commit、push，並刪掉草稿。
+已發布過的同一天會拒絕覆蓋，除非加 `--force`。
+
+也可以直接跟 Claude 說「上傳今天的核能晨報」，或先叫它改某一則再上。
+
+**手動補跑**（機器沒開、或想重跑）：
+
+```bash
+powershell -ExecutionPolicy Bypass -File nuclear\_system
+un-local.ps1
+powershell -ExecutionPolicy Bypass -File nuclear\_system
+un-local.ps1 -Date 20260820
+```
+
+草稿已存在時會直接略過，不覆蓋——要重跑先自己刪掉那個檔。
+每次執行的完整輸出留在 `_drafts/logs/YYYYMMDD.log`。
+
+`_drafts/` 已列入 `.gitignore`，所以未審的稿子不會混進 git。
+
+## 為什麼是本機草稿而非雲端直接發布
+
+雲端排程（`trig_01TsrKpMGikRPcikFxyG1438`）仍在，但已停用（`enabled: false`），
+隨時可以開回來。改成本機的理由是**發布前要有人看過**——
+晨報會引用規範編號、標示研究缺口、對照台灣現況，這些出錯的代價比漏一天高。
+草稿留在磁碟上，錯了就是一個檔案；直接 push 出去，錯的就是一個公開頁面。
+
+代價是機器沒開就沒有稿子。工作排程器設了 `StartWhenAvailable`，
+關機錯過的當日排程會在開機後補跑，但跨日不補。
 
 ## 本機預覽
 
