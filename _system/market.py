@@ -16,8 +16,13 @@ already open, that market's live price is carried in the raw JSON for the
 narrative instead of contaminating the table.
 
 Yahoo intermittently returns a null daily bar for a session that did trade
-(^N225 and ^TWII for 2026-08-18). Falling back to the 60-minute series recovers
-the close; without it the baseline silently slips back an extra session.
+(^N225 and ^TWII for 2026-08-18), and backfills it hours later. Falling back to
+the 60-minute series keeps the baseline on the right session, but the last
+hourly bar is NOT the close - it misses the closing auction. ^N225 on
+2026-08-18 closed at 67,460.73 while its final 60m bar read 67,506.77, a 46
+point error that reached print. Any value taken from the hourly series is
+therefore flagged 近似 in the 狀態 column and listed in the raw block, so the
+brief either says so or re-runs later once the daily bar lands.
 
 Usage:  python _system/market.py
 """
@@ -94,12 +99,14 @@ def fetch(symbol):
         today_done = end is not None and now_ts >= end
 
     by_date = session_closes(daily, tzoff)
+    exact = set(by_date)                             # dates backed by a real daily bar
     try:                                             # patch Yahoo's null daily bars
         by_date = dict(session_closes(chart(symbol, "60m"), tzoff), **by_date)
     except Exception:                                # noqa: BLE001 - hourly is a bonus
         pass
     if today_done:
         by_date[today] = live
+        exact.add(today)
 
     dates = sorted(d for d in by_date if d < today or (today_done and d == today))
     if len(dates) < 2:
@@ -107,9 +114,12 @@ def fetch(symbol):
     last_d, prev_d = dates[-1], dates[-2]
     last, prev = by_date[last_d], by_date[prev_d]
 
+    approx = [d for d in (last_d, prev_d) if d not in exact]
     return {"last": last, "prev": prev, "chg": last - prev,
             "pct": (last - prev) / prev * 100,
-            "date": last_d, "prev_date": prev_d, "state": "收盤",
+            "date": last_d, "prev_date": prev_d,
+            "state": "收盤（近似）" if approx else "收盤",
+            "approx_dates": approx,
             "live": live, "live_date": today,
             "live_intraday": not today_done and today in by_date}
 
@@ -133,6 +143,9 @@ for name, d in data.items():
     if "error" not in d:
         line = "<!-- {}: {} 收盤 vs 前一交易日 {} 收盤 {:,.2f}".format(
             name, d["date"], d["prev_date"], d["prev"])
+        if d["approx_dates"]:
+            line += "；【{} 無日線，值取自 60 分 K，非收盤價，稍後日線補上後應重跑】".format(
+                "、".join(d["approx_dates"]))
         if d["live_intraday"]:
             line += "；{} 盤中即時 {:,.2f}（{:+.2f}%）".format(
                 d["live_date"], d["live"], (d["live"] - d["last"]) / d["last"] * 100)
