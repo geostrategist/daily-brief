@@ -49,6 +49,15 @@ if (Test-Path $draft) {
     exit 0
 }
 
+# Nor re-run over a brief already published for this date. Without this the run
+# burns several minutes and then the agent correctly refuses to write a
+# duplicate, which the exit-1 path below would misreport as a broken run.
+$published = Join-Path $repo "briefs\Brief_$Date.md"
+if (Test-Path $published) {
+    Say "already published, skipping: $published"
+    exit 0
+}
+
 # Prefer a CLI on PATH. This machine has none: Claude Code is installed as the
 # VS Code extension, which ships its own binary under a version-stamped folder.
 # That path changes on every extension update (2.1.234 and 2.1.236 both present
