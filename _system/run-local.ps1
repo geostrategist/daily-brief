@@ -98,6 +98,9 @@ try {
     # Tools are limited to research and file writes - no git.
     # The prompt goes in on stdin. Passing it positionally lets a bare
     # multi-word argument be swallowed by the preceding --allowedTools list.
+    # Read/Glob/Grep already cover the research-literature lookup added to
+    # DAILY_PROMPT step 5b. That step reads P:\02_研究專案 and must never
+    # write there; Write/Edit stay scoped to this repo by the prompt itself.
     $tools = "Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Bash(python:*),Bash(date:*),Bash(curl:*)"
     Get-Content $promptTmp -Raw -Encoding UTF8 |
         & $claude -p --permission-mode acceptEdits --allowedTools $tools 2>&1 |

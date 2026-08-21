@@ -9,3 +9,6 @@ nuclear/_drafts/
 
 # 實踐國企晨報的每日草稿：本機七點產出，人工過目後才由 publish.py 搬進 briefs/ 並 push
 _drafts/
+_system/DAILY_PROMPT_修改前備份_*.md
+_system/run-local_修改前備份_*.ps1
+nuclear/_system/DAILY_PROMPT_修改前備份_*.md
