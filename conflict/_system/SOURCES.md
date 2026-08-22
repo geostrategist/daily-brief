@@ -44,10 +44,15 @@
 | 來源 | 網址 | 備註 |
 |---|---|---|
 | AMTI（CSIS 亞洲海事透明倡議） | https://amti.csis.org/ | 200。島礁建設與對峙的衛星影像分析，本欄位主力 |
-| 越南通訊社（英文） | https://en.vietnamplus.vn/ | 200。聲索國視角 |
+| Manila Times | https://www.manilatimes.net/news/feed | RSS，50則／次。菲方視角，含仁愛暗沙補給與海警對峙 |
 
 **菲律賓海岸防衛隊 `coastguard.gov.ph` 回 403**。菲方的執法衝突敘事改由 AMTI、
-WebSearch 與菲媒（母站 SOURCES 已驗證 GMA News、Philstar、Manila Times 之 RSS 可用）取得。
+Manila Times 與 WebSearch 取得。
+
+**越南通訊社已於 2026-08-23 移除**。`en.vietnamplus.vn` 回 200 但內容為純 JS 載入，
+34KB 之中零個連結、連 title 都是空的，靜態抓取取不到任何條目。改列 Manila Times RSS，
+理由是本節需要的是南海爭端內容而非越南國內新聞，實測 Manila Times 當日即有
+仁愛暗沙補給與中國海警跟監的條目。越南視角暫由 WebSearch 補充。
 
 ---
 
@@ -95,13 +100,23 @@ WebSearch 與菲媒（母站 SOURCES 已驗證 GMA News、Philstar、Manila Time
 | EEAS（歐盟對外事務部） | https://www.eeas.europa.eu/ | 200 |
 | Defense News | https://www.defensenews.com/ | 200。軍售與軍援，母站已驗證 |
 | Breaking Defense | https://breakingdefense.com/ | 200。預算與合約，母站已驗證 |
-| IISS | https://www.iiss.org/ | 200。軍力平衡 |
+| IISS | https://www.iiss.org/ | 200但為JS載入，靜態僅取得1個連結，見文末。軍力平衡 |
+| CSIS | https://www.csis.org/analysis | 200，1187連結。智庫分析，涵蓋中國、印太安全、國防工業 |
 
 **DSCA 全站回 403**（`dsca.mil`、`/press-media/major-arms-sales`、`/rss.xml` 皆是，
 WebFetch 與 curl 結果一致）。美國對外軍售通知改由 Defense News 與 Breaking Defense 取得，
 **引用時須回溯至 DSCA 原始通知編號**，取不到就於該則「待查核」寫明。
 
 **歐盟官方公報 EUR-Lex 回 502**（建站當日），可能為暫時性，首次巡檢時重試。
+
+**IISS 為 JS 站**。回 200 但 123KB 之中僅 1 個連結，靜態抓取取不到內文，
+`/online-analysis/` 另回 403。此站列為背景參考，**取不到內文屬預期，不必每日記為失敗**，
+需要其資料時改以 WebSearch 或直接引用其出版品。
+
+**CSIS 於 2026-08-23 加入**。首頁與 `/analysis` 均可靜態抓取，後者條目最多故列後者。
+注意本清單的 AMTI 即為 CSIS 旗下計畫，兩者不重複列計——AMTI 專供南海欄位的島礁與對峙分析，
+CSIS 母站供其餘欄位的中國軍力、國防工業與印太安全分析。
+**智庫分析屬〔B〕級**，其判斷不等同一手文件，引用時須指明是該機構的評估而非既成事實。
 
 ---
 
@@ -110,11 +125,11 @@ WebFetch 與 curl 結果一致）。美國對外軍售通知改由 Defense News 
 1. **ACLED 與 ReliefWeb**——一次可得多區的事件線索，先取
 2. **AP World、Al Jazeera、DW**——當日全球概況
 3. **國防部、防衛省、韓聯社**——欄位二與三
-4. **AMTI、越南通訊社**——欄位四
+4. **AMTI、Manila Times**——欄位四
 5. **RNZ Pacific、ABC Pacific**——欄位五，訊號密度低，快速掃過
 6. **The Hindu、Dawn**——欄位六，印巴議題並列兩者
 7. **Eurasianet、RFE/RL**——欄位七，訊號密度低
-8. **OFAC、BIS、Defense News**——欄位八
+8. **OFAC、BIS、Defense News、CSIS**——欄位八
 
 ---
 
@@ -135,3 +150,7 @@ WebFetch 與 curl 結果一致）。美國對外軍售通知改由 Defense News 
 
 - 2026-08-22：建站，31 個來源（去重後 30 個網址），逐一實測。
   DSCA、38 North、菲海防、澳 DFAT 不可用，各有替代途徑。
+- 2026-08-23：全站 33 個網址逐一複測。30 個正常，2 個為純 JS 站。
+  越南通訊社移除改列 Manila Times RSS，IISS 保留但註明為 JS 站不計失敗。
+  另更正一則：Breaking Defense 一度被自動偵測誤判為失效，複測回 173KB、206 連結，站正常。
+- 2026-08-23：加入 CSIS `/analysis`（智庫分析，涵蓋中國、印太安全、國防工業）。
