@@ -1,0 +1,33 @@
+{
+  "name": "國際衝突晨報 International Conflict Daily Brief",
+  "short_name": "國際衝突晨報",
+  "description": "每日巡檢兩岸、東亞、南海、南太平洋、南亞、中亞六區之衝突動態，以及制裁、軍備與同盟的跨區域結構。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#141b2b",
+  "theme_color": "#141b2b",
+  "lang": "zh-Hant",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "../icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

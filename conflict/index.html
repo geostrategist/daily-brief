@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>核能晨報 · Nuclear Daily Brief</title>
-<meta name="description" content="每日巡檢核能動態，依核子安全、核子保安、核子保防三個規範體系分節，附機組狀態速覽與未來事件行事曆。">
+<title>國際衝突晨報 · International Conflict Daily Brief</title>
+<meta name="description" content="每日巡檢兩岸、東亞、南海、南太平洋、南亞、中亞六區之衝突動態，附跨區域結構與未來事件行事曆。">
 <meta name="theme-color" content="#141b2b">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="../icons/favicon.svg" type="image/svg+xml">
@@ -68,11 +68,12 @@
     }
   }
 
-  /* 三個規範欄位各有定色。核子安全、保安、保防是不同的規範體系，不是同一件事的三種說法，
-     配色的作用是讓讀者每天看見同一組區分。 */
-  :root { --safety:#1c6b4a; --security:#8c2f1f; --safeg:#5b4b8a; --industry:#6b6459; }
+  /* 六區的定色。顏色的作用是讓讀者一眼看出當日的重量落在哪一區。 */
+  :root { --strait:#8c2f1f; --easia:#1c3f6e; --scs:#1c6b4a; --pacific:#1f6b6b;
+          --sasia:#8a6d1f; --casia:#5b4b8a; --cross:#6b6459; }
   :root[data-skin="ink"], :root[data-skin="navy"], :root[data-skin="warm"] {
-    --safety:#4fb98a; --security:#e08573; --safeg:#a99ae0; --industry:#8a9490;
+    --strait:#e08573; --easia:#7fa8d9; --scs:#4fb98a; --pacific:#5fc9c9;
+    --sasia:#d9b45c; --casia:#a99ae0; --cross:#8a9490;
   }
   @media (prefers-color-scheme: dark) {
     :root[data-skin="auto"] { --safety:#4fb98a; --security:#e08573; --safeg:#a99ae0; --industry:#8a9490; }
@@ -191,7 +192,7 @@
 
       <!-- one row: brand, date, read-aloud, speed, theme -->
       <div class="flex items-center gap-2 flex-wrap font-sans text-xs">
-        <h1 class="text-base font-bold shrink-0" style="font-family:'Noto Serif TC',serif">核能晨報</h1>
+        <h1 class="text-base font-bold shrink-0" style="font-family:'Noto Serif TC',serif">國際衝突晨報</h1>
         <span id="hdrdate" class="muted shrink-0"></span>
 
         <button id="play" class="btn-on px-2.5 py-1 rounded shrink-0">▶ 朗讀</button>
@@ -235,7 +236,7 @@
   <footer class="py-6 text-center text-xs muted font-sans px-4" style="border-top:1px solid var(--line)">
     <p>本報彙整公開資訊，非投資或決策建議。本報不倡議擁核或反核，只報事實與其後果。</p>
     <p class="mt-1"><a href="../" style="color:var(--link)">← 實踐國企晨報（母站）</a></p>
-    <p class="mt-1"><a href="../security/" style="color:var(--link)">國家安全晨報 →</a>　<a href="../conflict/" style="color:var(--link)">國際衝突晨報 →</a></p>
+    <p class="mt-1"><a href="../nuclear/" style="color:var(--link)">核能晨報 →</a>　<a href="../security/" style="color:var(--link)">國家安全晨報 →</a></p>
     <p class="mt-1">實踐大學高雄校區 國際企業管理學系</p>
   </footer>
 </div>
@@ -306,7 +307,7 @@ async function show(i) {
 }
 
 // ---------- reactor status table ----------
-// The nuclear brief opens with 機組狀態速覽 rather than a market table. Mark the
+// The conflict brief carries no status table of its own; this stays inert unless a
 // 較昨日 column so a state change reads at a glance and an unchanged row recedes.
 // Identified by its headers, never by position: the digest opens with a
 // calendar table, so this is not the first table in the document.
@@ -327,17 +328,19 @@ function colourStatusTable() {
 }
 
 // ---------- regimes ----------
-// 核子安全、核子保安、核子保防 are three distinct regulatory regimes with different
-// legal bases — safeguards derive from agreements, security from a national threat
-// assessment, and neither adds to nor subtracts from the other. The brief keeps them
-// in separate sections; the page gives each its own colour so the distinction is
-// visible before a word is read. Matched on the heading text, so a brief that omits
-// a section simply renders without that colour rather than breaking.
+// Six regions along one arc, from Northeast Asia through the Strait, the South China
+// Sea, the Pacific, South Asia and into Central Asia. The page gives each its own
+// colour so a reader sees at a glance where the day's weight fell. Matched on the
+// heading text, so a brief that omits a section simply renders without that colour
+// rather than breaking.
 const REGIMES = [
-  { key: 'safety',   test: /核子安全/,   label: '核子安全', en: 'safety',     hint: '針對意外與失效' },
-  { key: 'security', test: /核子保安/,   test2: /保安/, label: '核子保安', en: 'security', hint: '針對惡意行為者' },
-  { key: 'safeg',    test: /核子保防/,   label: '核子保防', en: 'safeguards', hint: '針對移作他用' },
-  { key: 'industry', test: /核能相關動態/, label: '相關動態', en: '', hint: '產業與政策面' }
+  { key: 'strait',  test: /兩岸/,       label: '兩岸',     en: 'Strait',          hint: '最切身，置於六區之首' },
+  { key: 'easia',   test: /東亞/,       label: '東亞',     en: 'East Asia',       hint: '朝鮮半島與日本周邊' },
+  { key: 'scs',     test: /南海/,       label: '南海',     en: 'South China Sea', hint: '島礁與執法衝突' },
+  { key: 'pacific', test: /南太平洋/,   label: '南太平洋', en: 'Pacific',         hint: '影響力競逐的慢變量' },
+  { key: 'sasia',   test: /南亞/,       label: '南亞',     en: 'South Asia',      hint: '印巴與印度洋' },
+  { key: 'casia',   test: /中亞/,       label: '中亞',     en: 'Central Asia',    hint: '中俄互動的場域' },
+  { key: 'cross',   test: /跨區域結構/, label: '跨區域',   en: 'cross-cutting',   hint: '制裁、軍備、同盟' }
 ];
 
 function regimeOf(text) {

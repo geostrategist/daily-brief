@@ -4,11 +4,12 @@ Thumbs.db
 __pycache__/
 _system/private/
 
-# 核能晨報的每日草稿：本機八點產出，人工過目後才由 publish.py 搬進 briefs/ 並 push
-nuclear/_drafts/
-
-# 實踐國企晨報的每日草稿：本機七點產出，人工過目後才由 publish.py 搬進 briefs/ 並 push
+# 各站每日草稿：本機排程產出，人工過目後才由 publish.py 搬進 briefs/ 並 push
+# 實踐國企晨報 05:00、核能晨報 02:00、國家安全晨報 03:00、國際衝突晨報 04:00
 _drafts/
+nuclear/_drafts/
+security/_drafts/
+conflict/_drafts/
 _system/DAILY_PROMPT_修改前備份_*.md
 _system/run-local_修改前備份_*.ps1
 nuclear/_system/DAILY_PROMPT_修改前備份_*.md
@@ -16,3 +17,5 @@ _system/DAILY_PROMPT_修改前備份*.md
 _system/run-local_修改前備份*.ps1
 nuclear/_system/DAILY_PROMPT_修改前備份*.md
 nuclear/_system/run-local_修改前備份*.ps1
+security/_system/*_修改前備份*
+conflict/_system/*_修改前備份*
