@@ -34,7 +34,7 @@ WebFetch 的結果與 curl 一致（DSCA 已交叉驗證）。
 
 | 來源 | 網址 | 備註 |
 |---|---|---|
-| 法務部調查局 | https://www.mjib.gov.tw/news/Details/1/1 | 200。**注意**：`/news` 回 500，須用本路徑 |
+| 法務部調查局 | https://www.mjib.gov.tw/news/Index?Module=1 | 200，新聞快報列表。**注意**：`/news` 回 500；`/news/Details/1/1` 雖回200但內容為 NoNews，見文末 |
 | 陸委會新聞稿 | https://www.mac.gov.tw/News.aspx?n=05B73310C5C3A632 | 200。**注意**：首頁 `www.mac.gov.tw/` 回 403，須用本路徑 |
 | 中央社政治 | https://www.cna.com.tw/list/aipl.aspx | 200。通訊社，作為線索 |
 | 立法院議事及發言系統 | https://ppg.ly.gov.tw/ppg/ | 200。質詢紀錄與法案進度 |
@@ -110,7 +110,9 @@ WebFetch 的結果與 curl 一致（DSCA 已交叉驗證）。
 
 ## 已知失效與限制
 
-- **`www.mjib.gov.tw/news` 回 500**，改用 `/news/Details/1/1`。
+- **`www.mjib.gov.tw/news` 回 500**。`/news/Details/1/1` 回200但內容為 NoNews，
+  2026-08-22 首次巡檢即撞上，改用 `/news/Index?Module=1` 取得新聞快報列表。
+  **此站是「200不等於巡檢成功」的實例**，取回內容後須確認確有條目。
 - **`www.mac.gov.tw/` 首頁回 403**，改用 `News.aspx?n=05B73310C5C3A632`。
 - **`www.asio.gov.au` 與 `www.canada.ca` 連線失敗**（`000`），見欄位八說明。
 - **政府網站多為 JS 載入**，靜態抓取常取不到內文標題。
@@ -125,3 +127,6 @@ WebFetch 的結果與 curl 一致（DSCA 已交叉驗證）。
 
 - 2026-08-22：建站，20 個來源（去重後 17 個網址），逐一實測。
   調查局與陸委會改用替代路徑，澳加官方來源不可用。
+- 2026-08-23：首次巡檢後回填。調查局改用 `/news/Index?Module=1`。
+  另記，首次巡檢當日陸委會、CISA、EUvsDisinfo 三站回403，事後重測均回200，
+  研判為當下限流而非永久失效，清單不因單日403移除。
