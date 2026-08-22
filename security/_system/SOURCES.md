@@ -78,6 +78,7 @@ WebFetch 的結果與 curl 一致（DSCA 已交叉驗證）。
 | 日本公安調查廳 | https://www.moj.go.jp/psia/ | 200。日文，年報與內外情勢回顧 |
 | ASPI | https://www.aspi.org.au/ | 200。澳洲智庫，本欄位澳紐案例的主要途徑 |
 | Jamestown China Brief | https://jamestown.org/programs/cb/ | 200。中國對外影響力研究 |
+| CSIS | https://www.csis.org/analysis | 200，1187連結。智庫分析，兼供欄位三的中國影響力操作研究 |
 
 **澳洲與加拿大官方來源不可用**：`asio.gov.au` 與 `canada.ca` 於本機實測連線失敗
 （curl 回 `000`，非 HTTP 錯誤碼，研判為地域封鎖或 CDN 拒絕）。
@@ -127,6 +128,8 @@ WebFetch 的結果與 curl 一致（DSCA 已交叉驗證）。
 
 - 2026-08-22：建站，20 個來源（去重後 17 個網址），逐一實測。
   調查局與陸委會改用替代路徑，澳加官方來源不可用。
+- 2026-08-23：新增 CSIS `/analysis`，供欄位三認知作戰與欄位八境外對照。
+  **智庫分析屬〔B〕級**，引用時須指明是該機構的評估而非既成事實。
 - 2026-08-23：首次巡檢後回填。調查局改用 `/news/Index?Module=1`。
   另記，首次巡檢當日陸委會、CISA、EUvsDisinfo 三站回403，事後重測均回200，
   研判為當下限流而非永久失效，清單不因單日403移除。

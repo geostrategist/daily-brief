@@ -1,12 +1,12 @@
-"""Promote a reviewed draft from _drafts/ into briefs/ and push.
+"""Promote a reviewed draft from journals/_drafts/ into journals/briefs/ and push.
 
-The 05:00 local run writes a draft and stops. Nothing reaches the site until
-this script runs, so a bad brief is a file on disk rather than a published page.
+The 01:00 local run writes a draft and stops. Nothing reaches the site until this
+script runs, so a bad brief is a file on disk rather than a published page.
 
-    python _system/publish.py              # today's draft
-    python _system/publish.py 20260821     # a specific date
-    python _system/publish.py --list       # what is waiting
-    python _system/publish.py --dry-run    # show the plan, touch nothing
+    python journals/_system/publish.py              # today's draft
+    python journals/_system/publish.py 20260820     # a specific date
+    python journals/_system/publish.py --list       # what is waiting
+    python journals/_system/publish.py --dry-run    # show the plan, touch nothing
 
 Refuses to overwrite an already-published brief unless --force is given: the
 common accident is re-running a draft over a brief that was edited after
@@ -21,19 +21,22 @@ import subprocess
 import sys
 from pathlib import Path
 
+import style_check
+
 if hasattr(sys.stdout, "reconfigure"):          # Windows consoles default to cp950
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):          # SystemExit messages go to stderr
     sys.stderr.reconfigure(encoding="utf-8")
 
-REPO = Path(__file__).resolve().parent.parent   # …/09_daily_brief
-DRAFTS = REPO / "_drafts"
-BRIEFS = REPO / "briefs"
+ROOT = Path(__file__).resolve().parent.parent   # …/journals
+REPO = ROOT.parent
+DRAFTS = ROOT / "_drafts"
+BRIEFS = ROOT / "briefs"
 
 
-def run(cmd, check=True):
+def run(cmd, check=True, capture=True):
     """Run a command in the repo root and return its stdout."""
-    r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True,
+    r = subprocess.run(cmd, cwd=REPO, capture_output=capture, text=True,
                        encoding="utf-8", errors="replace")
     if check and r.returncode != 0:
         out = (r.stdout or "") + (r.stderr or "")
@@ -52,69 +55,44 @@ def drafts_waiting():
     return out
 
 
-def check_draft(path, date):
+def check_draft(path):
     """Surface the problems worth catching before a brief goes public.
 
-    Advisory only. Whether the brief is any good is a judgement call and this
-    cannot make it; it flags the mechanical failures that are embarrassing once
-    published, and the two failure modes actually seen in production: a market
-    table where every index failed to fetch, and a calendar still listing dates
-    that have already passed.
+    Advisory only. The brief is a judgement call and this cannot make it; it
+    flags the mechanical failures that are embarrassing once published, plus the
+    prose habits ruled out by EDITORIAL.md section 13.
     """
     text = path.read_text(encoding="utf-8")
     warn = []
 
-    required = ["今日三分鐘摘要", "前一日市場", "建議決策行動",
-                "應持續追蹤議題", "巡檢摘要"]
+    required = ["今日摘要", "國際關係", "戰略與軍事", "會計與財稅",
+                "AI與法律", "區域研究", "政治經濟與科技政策", "巡檢摘要"]
     missing = [h for h in required if f"## {h}" not in text]
     if missing:
         warn.append("缺少固定欄位：" + "、".join(missing))
 
-    topics = re.findall(r"^## 主題[一二三四五六七]", text, re.M)
-    if len(topics) < 7:
-        warn.append(f"只有 {len(topics)} 個主題，應為 7 個")
-
     items = re.findall(r"^### \d+\.", text, re.M)
-    graded = re.findall(r"〔[ABC]〕", text)
-    baseline = re.findall(r"〔巡檢基線〕", text)
-    if items and len(graded) + len(baseline) < len(items):
-        warn.append(f"{len(items)} 則之中只有 {len(graded)} 則標了來源等級、"
-                    f"{len(baseline)} 則為巡檢基線，合計不足")
+    dois = re.findall(r"10\.\d{4,9}/", text)
+    if items and len(dois) < len(items):
+        warn.append(f"{len(items)} 則之中只有 {len(dois)} 則帶 DOI")
 
-    if "待查核" not in text:
-        warn.append("全文沒有「待查核」")
+    # The one line that makes this site worth reading; TOPICS.md refuses an item without it.
+    bolds = re.findall(r"^\*\*[^*\n]+\*\*", text, re.M)
+    if items and len(bolds) < len(items):
+        warn.append(f"{len(items)} 則之中只有 {len(bolds)} 則有粗體判讀句（為什麼值得讀）")
 
-    if "未來事件行事曆" not in text:
-        warn.append("缺少「未來事件行事曆」（EDITORIAL 第十二節）")
+    if "僅依標題判斷" not in text and "摘要" not in text:
+        warn.append("全文未見摘要可得性的說明，確認是否漏標「僅依標題判斷」")
 
     # the placeholder that means the model did not finish a section
     for ph in ["TODO", "TBD", "待補", "XXX", "（待填）"]:
         if ph in text:
             warn.append(f"仍留有佔位字樣「{ph}」")
 
-    # the cloud-routine failure signature: every index unfetched
-    market = re.search(r"## 前一日市場(.*?)^## ", text, re.S | re.M)
-    if market and market.group(1).count("未取得") >= 6:
-        warn.append("市場表六個指數全部「未取得」，確認 market.py 是否被網路阻擋")
+    if len(text) < 2000:
+        warn.append(f"全文僅 {len(text)} 字元，偏短，確認是否被截斷")
 
-    # a calendar row whose date has already passed
-    try:
-        today = datetime.date(int(date[:4]), int(date[4:6]), int(date[6:]))
-    except ValueError:
-        today = None
-    if today:
-        cal = re.search(r"\*\*未來事件行事曆\*\*(.*?)^---", text, re.S | re.M)
-        if cal:
-            for mm, dd in re.findall(r"^\|\s*(\d{2})-(\d{2})\s*\|", cal.group(1), re.M):
-                # a month far behind today's is next year's, not a stale row
-                row = datetime.date(today.year, int(mm), int(dd))
-                if row < today and (today - row).days < 300:
-                    warn.append(f"行事曆仍列有已過期的日期 {mm}-{dd}"
-                                f"（今天 {today:%m-%d}），第十二節第 1 點要求移除")
-
-    if len(text) < 4000:
-        warn.append(f"全文僅 {len(text)} 字元，偏短，確認是否被截斷或巡檢失敗")
-
+    warn.extend(style_check.check(text))       # EDITORIAL.md 第十三節
     return warn
 
 
@@ -136,9 +114,10 @@ def main():
         print(f"待發布草稿（{len(waiting)} 份）：\n")
         for date, f in waiting:
             kb = f.stat().st_size / 1024
-            mark = "　已發布過" if (BRIEFS / f.name).exists() else ""
+            published = (BRIEFS / f.name).exists()
+            mark = "　已發布過" if published else ""
             print(f"  {date}  {kb:6.1f} KB{mark}")
-        print("\n發布：python _system/publish.py [YYYYMMDD]")
+        print(f"\n發布：python journals/_system/publish.py [YYYYMMDD]")
         return
 
     date = args.date or datetime.date.today().strftime("%Y%m%d")
@@ -159,7 +138,7 @@ def main():
         raise SystemExit(
             f"{target.name} 已發布過。\n"
             f"確定要覆蓋就加 --force；先比對差異：\n"
-            f"  git diff --no-index briefs/{draft.name} _drafts/{draft.name}"
+            f"  git diff --no-index journals/briefs/{draft.name} journals/_drafts/{draft.name}"
         )
 
     iso = f"{date[:4]}-{date[4:6]}-{date[6:]}"
@@ -167,19 +146,19 @@ def main():
     print(f"草稿：{draft}")
     print(f"日期：{iso}　大小：{kb:.1f} KB")
 
-    warn = check_draft(draft, date)
+    warn = check_draft(draft)
     if warn:
         print("\n檢查發現：")
         for w in warn:
             print(f"  ⚠ {w}")
         print("  （以上為提醒，不阻擋發布）")
     else:
-        print("檢查：固定欄位、六個主題、來源等級、待查核、行事曆、市場表均無異常。")
+        print("檢查：固定欄位、DOI、判讀句、文體均無異常。")
 
-    print("\n將執行：")
-    print(f"  1. 複製到 briefs/{draft.name}")
-    print("  2. python _system/rebuild-manifest.py")
-    print(f"  3. git add briefs/ && git commit -m 'brief: {iso}' && git push")
+    print(f"\n將執行：")
+    print(f"  1. 複製到 journals/briefs/{draft.name}")
+    print(f"  2. python journals/_system/rebuild-manifest.py")
+    print(f"  3. git add journals/ && git commit -m 'journals: {iso}' && git push")
 
     if args.dry_run:
         print("\n--dry-run：未執行任何動作。")
@@ -194,19 +173,20 @@ def main():
     shutil.copy2(draft, target)
     print(f"\n已複製 → {target}")
 
-    print(run([sys.executable, str(REPO / "_system" / "rebuild-manifest.py")]))
+    out = run([sys.executable, str(ROOT / "_system" / "rebuild-manifest.py")])
+    print(out)
 
     if not run(["git", "config", "user.email"], check=False):
         run(["git", "config", "user.name", "geostrategist"])
         run(["git", "config", "user.email", "geostrategist@gmail.com"])
 
-    run(["git", "add", "briefs/"])
+    run(["git", "add", "journals/"])
     if not run(["git", "diff", "--cached", "--name-only"], check=False):
         print("沒有變更需要提交（內容與已發布版本相同）。")
         return
 
-    run(["git", "commit", "-m", f"brief: {iso}"])
-    print(f"已提交：brief: {iso}")
+    run(["git", "commit", "-m", f"journals: {iso}"])
+    print(f"已提交：journals: {iso}")
 
     r = subprocess.run(["git", "push"], cwd=REPO, capture_output=True,
                        text=True, encoding="utf-8", errors="replace")
@@ -217,7 +197,7 @@ def main():
         raise SystemExit(1)
 
     print("已推送。")
-    print("https://geostrategist.github.io/daily-brief/ （GitHub Pages 約需一分鐘）")
+    print(f"https://geostrategist.github.io/daily-brief/journals/ （GitHub Pages 約需一分鐘）")
     draft.unlink()
     print(f"草稿已清除：{draft.name}")
 

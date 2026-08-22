@@ -69,6 +69,7 @@
 | NIST AI | https://www.nist.gov/artificial-intelligence | 標準 |
 | 國科會 | https://www.nstc.gov.tw/ | 台灣 AI 政策。新聞區塊由 JS 載入，靜態抓取取不到標題，僅作進入點 |
 | Stanford HAI | https://hai.stanford.edu/news | 評測與研究 |
+| CSIS | https://www.csis.org/analysis | 200，1187連結。智庫分析，涵蓋出口管制、關鍵技術與國防工業 |
 
 ## 財稅與會計
 
@@ -79,19 +80,6 @@
 | 金管會 | https://www.fsc.gov.tw/ch/home.jsp?id=96&parentpath=0,2 | 財報揭露 |
 | EY Tax News | https://taxnews.ey.com/ | 具署名專業媒體，作為國際稅改指標來源；見到重要變動再回查 OECD 官方 PDF |
 | 會計研究發展基金會 | https://www.ardf.org.tw/ | 公報 |
-
-## 核能產業
-
-| 來源 | 網址 | 備註 |
-|---|---|---|
-| 核能安全委員會 | https://www.nusc.gov.tw/news/headline.html | 台灣主管機關，含機組運轉狀態與檢查報告 |
-| 原子力産業新聞（JAIF） | https://www.jaif.or.jp/journal/news/ | 日本原子力産業協會，日本與國際核能產業動態 |
-| World Nuclear News | https://www.world-nuclear-news.org/ | 產業媒體，新建與 SMR 進展 |
-| IAEA News | https://www.iaea.org/news | 國際原子能總署官方 |
-
-JAIF 的 RSS（`https://www.jaif.or.jp/feed`）回 200 但無 `<item>` 條目，不可用；請直接解析 HTML 列表頁。
-
----
 
 ## 選用模組：World Monitor（預設關閉）
 
@@ -110,4 +98,7 @@ JAIF 的 RSS（`https://www.jaif.or.jp/feed`）回 200 但無 `<item>` 條目，
 
 - 2026-08-18：建立初始清單，共 26 個固定巡檢網址。
 - 2026-08-18：新增核能產業四個來源（核安會、JAIF、World Nuclear News、IAEA）。
+- 2026-08-23：核能產業四個來源整節移除，該主題已交由子站 `nuclear/`。
+- 2026-08-23：新增 CSIS `/analysis`，供主題一的出口管制與供應鏈、主題五的AI治理與國防科技。
+  **智庫分析屬〔B〕級**，引用時須指明是該機構的評估而非既成事實。
 - 2026-08-18：主題一由「兩岸」改為「國際企業」，改以 Yahoo 股市三支 RSS 為主力。移除九個長期失效來源：陸委會（403）、國台辦（編碼損毀）、外務省（403）、NHK 政治（工具層阻擋）、The Diplomat 東南亞（403）、ASEAN 官方（307）、菲律賓海岸防衛隊（403）、OECD 稅務（403）、歐盟 AI Act 站（網域不存在且原非官方站）。各以可抓取的具署名替代來源補上。
