@@ -32,7 +32,7 @@ sw.js                   Service Worker，快取名稱與母站分離
 briefs/
   manifest.json         日期索引，新的在最前面
   Brief_YYYYMMDD.md     每日晨報
-_drafts/                每日八點產出的草稿，未發布。已 gitignore
+_drafts/                每日凌晨兩點產出的草稿，未發布。已 gitignore
   logs/                 每次執行的完整輸出
 _system/
   TOPICS.md             八個欄位的設定 — 改這裡就改變隔日版面與巡檢範圍
@@ -41,7 +41,7 @@ _system/
   REFERENCE.md          規範編號、三者之區分、研究缺口、台灣現況基準
   DAILY_PROMPT.md       每日指令原文（本機與雲端共用）
   LOCAL_OVERRIDE.md     本機執行時附加的覆寫規則（寫到 _drafts/、不要 push）
-  run-local.ps1         本機八點排程執行的腳本，只產草稿
+  run-local.ps1         本機凌晨兩點排程執行的腳本，只產草稿
   publish.py            過目後發布：搬進 briefs/、重建索引、commit、push
   rebuild-manifest.py   依 briefs/ 內實際檔案重建索引
 ```
@@ -105,12 +105,12 @@ _system/
 6. `python nuclear/_system/rebuild-manifest.py`
 7. commit 並 push，GitHub Pages 自動發布
 
-**排程**：每日早上八點，**在本機**跑，產出草稿後停下——不 commit、不 push。
-過目後才由 `publish.py` 發布。母站晨報為七點（雲端），兩者錯開。
+**排程**：每日凌晨兩點，**在本機**跑，產出草稿後停下——不 commit、不 push。
+過目後才由 `publish.py` 發布。母站晨報為凌晨一點，同樣在本機，兩者錯開一小時。
 
 ## 每日的實際操作
 
-早上八點，Windows 工作排程器會跑 `_system/run-local.ps1`，巡檢 18 個來源、寫出草稿到
+凌晨兩點，Windows 工作排程器會跑 `_system/run-local.ps1`，巡檢 18 個來源、寫出草稿到
 `_drafts/Brief_YYYYMMDD.md`，然後**停在那裡**。網站上不會有任何變化。
 
 看稿：

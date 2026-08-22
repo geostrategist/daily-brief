@@ -1,6 +1,6 @@
 """Promote a reviewed draft from nuclear/_drafts/ into nuclear/briefs/ and push.
 
-The 08:00 local run writes a draft and stops. Nothing reaches the site until this
+The 02:00 local run writes a draft and stops. Nothing reaches the site until this
 script runs, so a bad brief is a file on disk rather than a published page.
 
     python nuclear/_system/publish.py              # today's draft

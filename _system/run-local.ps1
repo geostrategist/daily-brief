@@ -1,6 +1,6 @@
 # Daily brief - local draft run.
 #
-# Fired by Windows Task Scheduler at 07:00. Leaves a draft in _drafts/ and
+# Fired by Windows Task Scheduler at 01:00. Leaves a draft in _drafts/ and
 # stops: no commit, no push. Publishing is a separate, human-gated step
 # (see publish.py).
 #

@@ -1,6 +1,6 @@
 ﻿# Nuclear brief - local daily draft run.
 #
-# Fired by Windows Task Scheduler at 08:00. Leaves a draft in nuclear/_drafts/
+# Fired by Windows Task Scheduler at 02:00. Leaves a draft in nuclear/_drafts/
 # and stops: no commit, no push. Publishing is a separate, human-gated step
 # (see publish.py).
 #
