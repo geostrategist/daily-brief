@@ -58,6 +58,31 @@ if (Test-Path $published) {
     exit 0
 }
 
+# A run already in flight must not be duplicated. The draft-exists check above
+# cannot catch this: during generation the file does not exist yet, so a second
+# invocation sails past it and starts a parallel run. That happened on
+# 2026-08-22 when a scheduled run fired while a manual run was still working,
+# burning API budget on a discarded second copy.
+#
+# The lock records the owning PID so a lock left behind by a crash or a hard
+# kill does not block every future run. If that process is gone, the lock is
+# stale and we take it over.
+$lock = Join-Path $drafts ".run-$Date.lock"
+if (Test-Path $lock) {
+    $owner = (Get-Content $lock -Raw -ErrorAction SilentlyContinue).Trim()
+    $alive = $false
+    if ($owner -match '^\d+$') {
+        $alive = [bool](Get-Process -Id ([int]$owner) -ErrorAction SilentlyContinue)
+    }
+    if ($alive) {
+        Say "another run is in progress (pid $owner), skipping"
+        exit 0
+    }
+    Say "stale lock from pid $owner, taking over"
+    Remove-Item $lock -Force -ErrorAction SilentlyContinue
+}
+Set-Content -Path $lock -Value $PID -Encoding ASCII
+
 # Prefer a CLI on PATH. This machine has none: Claude Code is installed as the
 # VS Code extension, which ships its own binary under a version-stamped folder.
 # That path changes on every extension update (2.1.234 and 2.1.236 both present
@@ -98,9 +123,6 @@ try {
     # Tools are limited to research and file writes - no git.
     # The prompt goes in on stdin. Passing it positionally lets a bare
     # multi-word argument be swallowed by the preceding --allowedTools list.
-    # Read/Glob/Grep already cover the research-literature lookup added to
-    # DAILY_PROMPT step 5b. That step reads P:\02_研究專案 and must never
-    # write there; Write/Edit stay scoped to this repo by the prompt itself.
     $tools = "Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Bash(python:*),Bash(date:*),Bash(curl:*)"
     Get-Content $promptTmp -Raw -Encoding UTF8 |
         & $claude -p --permission-mode acceptEdits --allowedTools $tools 2>&1 |
@@ -118,4 +140,5 @@ try {
 finally {
     Pop-Location
     Remove-Item $promptTmp -ErrorAction SilentlyContinue
+    Remove-Item $lock -Force -ErrorAction SilentlyContinue
 }
