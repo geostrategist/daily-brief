@@ -26,7 +26,8 @@
 
 **第二步，巡檢來源。** 依 `SOURCES.md` 的「巡檢順序建議」逐一 WebFetch：
 先抓 World Nuclear News 的 RSS（一次可得 40 則、涵蓋多數主題的線索），
-再抓核安會與 JAIF，其餘依主題順序補齊。
+再抓核安會與台電 JSON、JAIF，接著 **ANS Nuclear Newswire**（美國產業與研究動態，
+2026-08-23 提前至此），其餘依主題順序補齊。
 
 三點必須遵守：
 
