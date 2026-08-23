@@ -25,10 +25,15 @@
 
 | 來源 | 網址 | 備註 |
 |---|---|---|
-| 台灣民主實驗室 | https://doublethinklab.org/ | 200。歸因報告含方法論，本欄位品質最高的來源 |
-| IORG | https://iorg.tw/ | 200。資訊操作研究，具資料集 |
-| EUvsDisinfo | https://euvsdisinfo.eu/ | **WebFetch 回 403 不可用**，見文末。兼供欄位八 |
-| 國安局 | https://www.nsb.gov.tw/ | **純JS站不可用**，全站僅3.4KB、零連結，見文末 |
+| IORG | https://iorg.tw/ | 可用。資訊操作研究，具資料集 |
+| ASPI | https://www.aspi.org.au/ | 可用。中國影響力操作研究，兼供欄位八 |
+| CSIS | https://www.csis.org/analysis | 可用。智庫分析，兼供欄位八 |
+| EUvsDisinfo | https://euvsdisinfo.eu/ | **WebFetch 回 403 不可用**，見文末 |
+
+**台灣民主實驗室與國安局已於 2026-08-23 移除**。國安局為純JS站本就取不到內容
+（全站3.4KB、零連結）。台灣民主實驗室則抓得到，移除屬編輯判斷而非技術問題。
+本欄位的歸因來源因而以 IORG、ASPI、CSIS 為主，**三者皆為研究機構**，
+其歸因依 `EDITORIAL.md` 第四節仍須交代方法與信心程度，不因機構聲譽而免除。
 
 ---
 
@@ -47,9 +52,12 @@
 
 | 來源 | 網址 | 備註 |
 |---|---|---|
-| 數位發展部資安署 | https://moda.gov.tw/ACS/index | 200 |
-| CISA Advisories | https://www.cisa.gov/news-events/cybersecurity-advisories | **WebFetch 回 403 不可用**，見文末。含 IOC 與 TTP |
-| 國防安全研究院 | https://indsr.org.tw/ | 200。兼供欄位三與欄位九 |
+| 數位發展部資安署 | https://moda.gov.tw/ACS/index | 可用。台灣主管機關 |
+| The Record | https://therecord.media/ | 可用。資安專業媒體，含關鍵基礎設施攻擊、勒索軟體、國家級行動 |
+| Federal News Network · 關鍵基礎設施 | https://federalnewsnetwork.com/tag/critical-infrastructure/ | 可用。美國聯邦資安政策與CISA動態 |
+| 國防安全研究院 | https://indsr.org.tw/ | 可用。兼供欄位三與欄位九 |
+| CISA | https://www.cisa.gov/ | **WebFetch 回 403 不可用**（全站含 RSS），見文末 |
+| 美國國土安全部 DHS | https://www.dhs.gov/group/all/newsroom | **WebFetch 回 403 不可用**（全站），見文末 |
 
 ---
 
@@ -57,8 +65,14 @@
 
 | 來源 | 網址 | 備註 |
 |---|---|---|
+| 中央社財經 | https://www.cna.com.tw/list/aie.aspx | 可用。母站已驗證 |
+| ASPI | https://www.aspi.org.au/ | 可用。維有脅迫性外交資料庫，本節的個案計數來源 |
+| CSIS | https://www.csis.org/analysis | 可用。出口管制與供應鏈槓桿分析 |
 | 陸委會新聞稿 | https://www.mac.gov.tw/News.aspx?n=05B73310C5C3A632 | 同欄位四，**WebFetch 回 403 不可用** |
-| 中央社財經 | https://www.cna.com.tw/list/aie.aspx | 200。母站已驗證可用 |
+
+**本節在陸委會不可用後只剩中央社一個固定來源**，故補列 ASPI 與 CSIS。
+兩者為研究機構而非官方，**其個案計數與判斷屬〔B〕級**，
+涉及台灣的貿易措施仍須回查官方公告或企業重訊，取不到就寫入待查核。
 
 ---
 
@@ -66,9 +80,15 @@
 
 | 來源 | 網址 | 備註 |
 |---|---|---|
-| 移民署 | https://www.immigration.gov.tw/ | 200。統計月報與新聞稿 |
-| 勞動部勞動力發展署 | https://www.wda.gov.tw/ | 200。移工統計 |
-| 內政部 | https://www.moi.gov.tw/ | 200。函釋與修法 |
+| 內政部 | https://www.moi.gov.tw/ | 可用。函釋與修法 |
+| The Record | https://therecord.media/ | 可用。兼供本節的邊境生物辨識與資料庫議題 |
+
+**移民署與勞動部勞動力發展署已於 2026-08-23 移除**。兩站 WebFetch 均可取得，
+移除的理由不是抓不到而是產出不合本節所需——實測當日移民署首頁為「新住民尋親」
+一類的宣導性新聞，勞動部為「產業新尖兵計畫」一類的職訓推廣，
+均非本節要的人數、國籍別與年度比較。
+**兩署的統計月報仍是本節的優先訊號**，需要時以 WebSearch 直接指向其統計專頁，
+不再每日巡檢其首頁。
 
 ---
 
@@ -103,9 +123,9 @@
 
 1. **國防部即時軍事動態**——欄位二的表格要用，先取
 2. **調查局、中央社政治**——欄位四與六的主力（陸委會不可用）
-3. **台灣民主實驗室、IORG**——欄位三，更新頻率低，快速掃過即可
-4. **資安署**——欄位五（CISA 不可用，缺口以 WebSearch 補）
-5. **移民署、勞動部、內政部**——欄位七，統計類更新以月為單位
+3. **IORG、ASPI、CSIS**——欄位三，更新頻率低，快速掃過即可
+4. **資安署、The Record、Federal News Network**——欄位五（CISA 與 DHS 不可用，由此二媒體替代）
+5. **內政部**——欄位七（移民署與勞動部已移除，統計改以 WebSearch 指向其統計專頁）
 6. **公安調查廳、ASPI、CSIS、Jamestown**——欄位八，取一則即可（EUvsDisinfo 不可用）
 7. **立法院、全國法規資料庫**——欄位九
 
@@ -118,18 +138,26 @@
   **此站是「200不等於巡檢成功」的實例**，取回內容後須確認確有條目。
 - **`www.mac.gov.tw/` 首頁回 403**，改用 `News.aspx?n=05B73310C5C3A632`。
 - **`www.asio.gov.au` 與 `www.canada.ca` 連線失敗**（`000`），見欄位八說明。
+- **美國 DHS 與 CISA 全站 WebFetch 回 403**（2026-08-23 實測）。
+  兩站的首頁、新聞頁與 CISA 的 advisories RSS（`/cybersecurity-advisories/all.xml`）
+  一律回 403，非單一路徑問題。**兩者的產出改由 The Record 與 Federal News Network
+  取得**，此二站均大量報導 CISA 通報與 DHS 政策，實測當日即有
+  「NSA、FBI 警告駭客以AI生成工具攻擊關鍵基礎設施」與
+  「CISA 人力削減影響」等條目。**引用時須回溯至 CISA 或 DHS 原始編號**，
+  取不到就於該則「待查核」寫明。
 - **陸委會、CISA、EUvsDisinfo 三站 WebFetch 回 403**（2026-08-23 複測確認）。
   三站以 curl 均可取得，但晨報用的是 WebFetch，故實際不可用。
   替代：陸委會的政策立場改由中央社政治與立法院質詢取得；CISA 的資安通報
   改由數發部資安署與 WebSearch 取得；EUvsDisinfo 的歐洲案例改由 ASPI
   與 WebSearch 取得。**引用時仍須回溯至原機構文件，取不到就寫入待查核。**
-- **國安局 `www.nsb.gov.tw` 為純 JS 站**，全站僅 3.4KB、零個連結，
-  WebFetch 只讀得到標題「國家安全局」，`/zh/news` 與 `/zh/publications` 均回 404。
-  國安局的公開材料改由立法院議事系統的業務報告與質詢紀錄取得。
+- **國安局 `www.nsb.gov.tw` 已自清單移除**。該站為純 JS 站，全站僅 3.4KB、
+  零個連結，WebFetch 只讀得到標題「國家安全局」，`/zh/news` 與 `/zh/publications`
+  均回 404。國安局的公開材料改由立法院議事系統的業務報告與質詢紀錄取得。
+  **此處保留紀錄，是為了讓日後有人想加時看得到已經試過且失敗。**
 - **政府網站多為 JS 載入**，靜態抓取常取不到內文標題。
   母站 SOURCES 已記錄國科會即為此例。取不到標題時記入巡檢摘要，
   **不要因為抓到 200 就當作巡檢成功**。
-- **移民署與勞動部的統計以月為單位更新**，多數日子無新數字。
+- **移民與勞動統計以月為單位更新**，多數日子無新數字。
   這不是巡檢失敗，寫巡檢基線即可。
 
 ---
@@ -148,3 +176,15 @@
   **本清單此後一律以 WebFetch 實測。**
 - 2026-08-23：國安局改記為不可用（純JS站，零連結）。
   全站 22 個網址以 WebFetch 複測，18 個可用，4 個不可用。
+- 2026-08-23：欄位五新增 The Record 與 Federal News Network，
+  兩站均以 WebFetch 實測可用且當日即有關鍵基礎設施條目。
+  同時列入 CISA 與 DHS 並記為不可用，理由見文末——列而不刪是為了讓
+  日後有人想加時看得到已經試過且失敗，不必再試一次。
+- 2026-08-23：欄位七移除移民署與勞動部勞動力發展署。兩站抓得到，
+  但其首頁產出為宣導與職訓推廣，非本節所需的統計。統計改以 WebSearch
+  直接指向統計專頁。欄位七另加 The Record 供邊境生物辨識與資料庫議題。
+- 2026-08-23：欄位六補列 ASPI 與 CSIS。陸委會不可用後該節只剩中央社一個來源，
+  低於每節至少兩個的門檻。
+- 2026-08-23：欄位三移除台灣民主實驗室與國安局。國安局為純JS站本就不可用，
+  台灣民主實驗室抓得到，移除屬編輯判斷。欄位三的歸因來源改以
+  IORG、ASPI、CSIS 為主。
