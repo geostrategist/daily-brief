@@ -48,11 +48,23 @@
 | 來源 | 網址 | 備註 |
 |---|---|---|
 | Nikkei Asia · Politics | https://asia.nikkei.com/Politics | 可用，當日條目。2026-08-23 換入，取代已死的 Japan Times feed |
+
+**北韓自 2026-08-23 起明確納入本主題**，以 NK News 為主力、CSIS Korea 為分析補充。
+先前本主題僅寫日韓兩國，北韓動態只在涉及南韓時附帶提及。
+**Yahoo 國際市場 RSS 亦含日韓條目**（實測當日有日本專利競爭力與韓銀利率兩則），
+該支已列於主題一，本主題不重複列，但巡檢時可一併取用。
+
+**38 North 與韓聯社北韓版 `en.yna.co.kr/nk` 均不可用**（前者 403、後者主機層阻擋），
+北韓的技術性分析改由 NK News 與 WebSearch 取得。
 | 共同通信 | https://english.kyodonews.net/ | **WebFetch 主機層阻擋不可用**，見文末 |
 | Nikkei Asia | https://asia.nikkei.com/ | 日本經貿與供應鏈 |
 | 韓聯社 Yonhap（英文） | https://en.yna.co.kr/ | **WebFetch 主機層阻擋不可用**，見文末 |
 | Korea Herald | https://www.koreaherald.com/ | 韓媒，具署名 |
 | 防衛省報道発表 | https://www.mod.go.jp/j/press/news/index.html | 可用但更新稀疏，最新為 8/7。屬該站發布頻率低，非抓取失敗 |
+| NK News | https://www.nknews.org/ | 可用，近乎每日。**北韓專門來源**，含飛彈、制裁、兩韓關係、朝俄與朝中 |
+| CSIS · Korea | https://www.csis.org/regions/asia/korea | 可用。智庫分析，含北韓外交與美韓同盟 |
+| SPF · IINA | https://www.spf.org/iina/en/ | 可用。笹川平和財団，日本外交與安全分析 |
+| Brookings · Asia | https://www.brookings.edu/topic/asia-the-pacific/ | 可用但週更。智庫分析，含台海與日韓 |
 
 原外務省（403）與 NHK 政治（工具層阻擋）於 2026-08-18 移除。同日新增韓國兩個來源。
 
@@ -74,6 +86,7 @@
 | NIST AI | https://www.nist.gov/artificial-intelligence | 標準 |
 | 國科會 | https://www.nstc.gov.tw/ | **JS 載入取不到日期**，僅作進入點，見文末 |
 | Stanford HAI | https://hai.stanford.edu/news | 評測與研究 |
+| Brookings · Asia | https://www.brookings.edu/topic/asia-the-pacific/ | 可用。兼供本主題的AI治理與科技競爭分析 |
 | CSIS | https://www.csis.org/analysis | 200，1187連結。智庫分析，涵蓋出口管制、關鍵技術與國防工業 |
 
 ## 財稅與會計
@@ -84,7 +97,14 @@
 | 全國法規資料庫 | https://law.moj.gov.tw/ | 條文原文 |
 | 金管會 | https://www.fsc.gov.tw/ch/home.jsp?id=96&parentpath=0,2 | 財報揭露 |
 | International Tax Review | https://www.internationaltaxreview.com/ | 可用，當日條目。國際稅改、Pillar Two、移轉訂價。2026-08-23 換入，取代需登入的 EY |
+| Tax Foundation | https://taxfoundation.org/ | 可用，週數則。**美國聯邦與各州稅制**，兼含關稅與國際稅 |
+| PIIE | https://www.piie.com/research | 可用但月更。美國貿易與關稅、制裁、供應鏈的經濟分析 |
 | 會計研究發展基金會 | https://www.ardf.org.tw/ | 公報 |
+
+**美國稅政來源於 2026-08-23 加入**，為 Tax Foundation 與 PIIE。
+美國聯邦政府的一手來源（GAO、CBO、財政部新聞稿）**WebFetch 全數阻擋**，
+見文末。故美國稅政以此二智庫替代，**其分析屬〔B〕級**，
+涉及具體法案與數字時須回溯法案原文或官方預算文件，取不到就寫入待查核。
 
 ## 選用模組：World Monitor（預設關閉）
 
@@ -103,17 +123,29 @@
 
 以下為 2026-08-23 以 WebFetch 逐一複測 29 個網址的結果，18 個可用、11 個有問題。
 
-**主機層阻擋（2 個）**：共同通信 `english.kyodonews.net`、韓聯社 `en.yna.co.kr`。
+**主機層阻擋（3 個）**：共同通信 `english.kyodonews.net`、韓聯社 `en.yna.co.kr`
+（含其北韓版 `/nk`）、美國財政部 `home.treasury.gov`。
 WebFetch 回主機拒絕而非數字狀態碼，連日一致，非暫時性。
 日韓動態改由 Nikkei Asia、Korea Herald 與中央社支撐。
+
+**403 阻擋（7 個，2026-08-23 測）**：38 North、Stimson、East Asia Forum、
+Chatham House、Tax Policy Center、GAO、CBO。
+**美國聯邦政府的一手來源全數不可用**（GAO、CBO、財政部），
+故財稅主題的美國部分以 Tax Foundation 與 PIIE 替代，兩者為智庫非官方。
+
+**JS 渲染取不到條目（1 個）**：Carnegie `carnegieendowment.org/research` 回 200
+但索引為前端渲染，WebFetch 只見導覽。需其內容時以個別文章網址或 WebSearch 取得。
 
 **回 200 但內容過期或無內容（4 個）**：
 
 - **Japan Times feed 已死**，回 200 但內容為 2023 至 2025 年舊快取，
   **這是最危險的一種失效**，因為它會安靜地把三年前的新聞當新聞餵進晨報。已移除。
-- **GMA News RSS 停滯**，回 200 但最新條目停在 8/8，已換為 Inquirer。
-- **EY Tax News 為登入牆**，回 200 但內容是會員驗證頁與服務條款，
-  已換為 International Tax Review。
+- **GMA News RSS 停滯**，回 200 但最新條目停在 8/8。**已於 2026-08-23 刪除**，
+  改用 Inquirer。
+- **EY Tax News 為登入牆**，回 200 但內容是會員驗證頁與服務條款。
+  **已於 2026-08-23 刪除**，改用 International Tax Review。
+- **IAEA News 回 402 Payment Required**。該來源原屬核能主題，
+  **已隨主題七於 2026-08-23 一併刪除**，本站不再巡檢核能來源。
 - **國科會與立法院議事系統為 JS 載入**，回 200 但取不到日期與條目。
   兩者僅作進入點，需要其內容時以 WebSearch 指向具體頁面。
 
@@ -129,12 +161,15 @@ NIST 僅到月份。引用時須點進個別文章確認日期。
 ## 來源調整紀錄
 
 - 2026-08-18：建立初始清單，共 26 個固定巡檢網址。
-- 2026-08-18：新增核能產業四個來源（核安會、JAIF、World Nuclear News、IAEA）。
+- 2026-08-18：新增核能產業四個來源（核安會、JAIF、World Nuclear News、IAEA）。〔已於 08-23 全數刪除〕
 - 2026-08-23：核能產業四個來源整節移除，該主題已交由子站 `nuclear/`。
 - 2026-08-23：全站 29 個網址以 WebFetch 逐一複測，結果見「已知失效與限制」。
   換掉三個：Japan Times（feed 為 2023-2025 舊快取）改 Nikkei Asia Politics、
   GMA News（停滯兩週）改 Inquirer、EY Tax News（登入牆）改 International Tax Review。
   共同通信與韓聯社改記為主機層阻擋不可用。
+- 2026-08-23：主題三新增北韓，來源為 NK News、CSIS Korea、SPF IINA、Brookings。
+  主題六新增美國稅政，來源為 Tax Foundation 與 PIIE。主題五新增 Brookings。
+  GMA、EY Tax News、IAEA 三者確認刪除，不再列於任何主題。
 - 2026-08-23：新增 CSIS `/analysis`，供主題一的出口管制與供應鏈、主題五的AI治理與國防科技。
   **智庫分析屬〔B〕級**，引用時須指明是該機構的評估而非既成事實。
 - 2026-08-18：主題一由「兩岸」改為「國際企業」，改以 Yahoo 股市三支 RSS 為主力。移除九個長期失效來源：陸委會（403）、國台辦（編碼損毀）、外務省（403）、NHK 政治（工具層阻擋）、The Diplomat 東南亞（403）、ASEAN 官方（307）、菲律賓海岸防衛隊（403）、OECD 稅務（403）、歐盟 AI Act 站（網域不存在且原非官方站）。各以可抓取的具署名替代來源補上。
