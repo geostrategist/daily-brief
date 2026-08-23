@@ -75,6 +75,16 @@ python security/_system/publish.py              # 確認後發布
 ```
 
 `publish.py` 會檢查固定欄位、來源等級、待查核、佔位字樣與文體。
+
+**兩件要知道的事**：
+
+其一，發布用的是 `git add security/`，會把該資料夾底下**所有**未提交變更
+一併納入那支 commit。若同時改了 `_system/` 的設定又發布晨報，兩者會被綁在
+同一個 commit，訊息只會寫「security: 日期」。要分開就先各自 commit 再發布。
+
+其二，發布會**刪掉草稿**。若此時排程或手動執行的 `run-local.ps1` 仍在跑，
+它結束時會找不到草稿而回報「run finished but no draft was produced」並以 1 結束。
+那是誤報，晨報其實已發布。確認方式為看 `briefs/` 內該日檔案是否存在。
 這些是提醒，不阻擋發布——晨報是判斷，腳本代替不了。
 
 ## 本機預覽
