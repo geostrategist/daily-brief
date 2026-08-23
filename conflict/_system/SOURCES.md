@@ -4,8 +4,13 @@
 
 清單以外的資料，透過 WebSearch 補充，但須符合 `EDITORIAL.md` 的來源品質規則。
 
-**本清單的網址皆於 2026-08-22 建站時實測**，狀態記於備註欄。
-實測用 `curl -A "Mozilla/5.0" -o /dev/null -w "%{http_code}" -L <url>`。
+**本清單的網址皆已實測**，狀態記於備註欄。
+
+**實測一律用 WebFetch，不用 curl。** 晨報產製時用的是 WebFetch，兩者結果會不一致——
+國安站於 2026-08-23 發現三站 curl 回 200 但 WebFetch 回 403。
+本清單的備註欄若僅記 curl 結果（建站當日多為此），**遇該站取不到內容時
+應先以 WebFetch 複測再判定**，不要因為 curl 通就認定站是好的。
+已知本站的 The Diplomat、Inquirer、Rappler 即屬 curl 通而 WebFetch 403 者，故未列入。
 
 ---
 
