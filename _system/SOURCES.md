@@ -41,32 +41,30 @@
 
 原 The Diplomat、ASEAN 官方、菲律賓海岸防衛隊三站因 WAF 阻擋（403／307）於 2026-08-18 移除。
 
-## 日／韓
+## 日／韓／北韓
 
-本主題每日只寫一則，取日韓兩國當日最重要的國際新聞或經貿動態。
+本主題每日只寫一則，取日、韓、北韓三國當日最重要的國際新聞或經貿動態。
 
 | 來源 | 網址 | 備註 |
 |---|---|---|
 | Nikkei Asia · Politics | https://asia.nikkei.com/Politics | 可用，當日條目。2026-08-23 換入，取代已死的 Japan Times feed |
-
-**北韓自 2026-08-23 起明確納入本主題**，以 NK News 為主力、CSIS Korea 為分析補充。
-先前本主題僅寫日韓兩國，北韓動態只在涉及南韓時附帶提及。
-**Yahoo 國際市場 RSS 亦含日韓條目**（實測當日有日本專利競爭力與韓銀利率兩則），
-該支已列於主題一，本主題不重複列，但巡檢時可一併取用。
-
-**38 North 與韓聯社北韓版 `en.yna.co.kr/nk` 均不可用**（前者 403、後者主機層阻擋），
-北韓的技術性分析改由 NK News 與 WebSearch 取得。
-| 共同通信 | https://english.kyodonews.net/ | **WebFetch 主機層阻擋不可用**，見文末 |
 | Nikkei Asia | https://asia.nikkei.com/ | 日本經貿與供應鏈 |
-| 韓聯社 Yonhap（英文） | https://en.yna.co.kr/ | **WebFetch 主機層阻擋不可用**，見文末 |
 | Korea Herald | https://www.koreaherald.com/ | 韓媒，具署名 |
-| 防衛省報道発表 | https://www.mod.go.jp/j/press/news/index.html | 可用但更新稀疏，最新為 8/7。屬該站發布頻率低，非抓取失敗 |
 | NK News | https://www.nknews.org/ | 可用，近乎每日。**北韓專門來源**，含飛彈、制裁、兩韓關係、朝俄與朝中 |
 | CSIS · Korea | https://www.csis.org/regions/asia/korea | 可用。智庫分析，含北韓外交與美韓同盟 |
 | SPF · IINA | https://www.spf.org/iina/en/ | 可用。笹川平和財団，日本外交與安全分析 |
 | Brookings · Asia | https://www.brookings.edu/topic/asia-the-pacific/ | 可用但週更。智庫分析，含台海與日韓 |
+| 防衛省報道発表 | https://www.mod.go.jp/j/press/news/index.html | 可用但更新稀疏，最新為 8/7。屬該站發布頻率低，非抓取失敗 |
 
-原外務省（403）與 NHK 政治（工具層阻擋）於 2026-08-18 移除。同日新增韓國兩個來源。
+**北韓自 2026-08-23 起明確納入本主題**，以 NK News 為主力、CSIS Korea 為分析補充。
+先前本主題僅寫日韓兩國，北韓動態只在涉及南韓時附帶提及。
+
+**Yahoo 國際市場 RSS 亦含日韓條目**（實測當日有日本專利競爭力與韓銀利率兩則），
+該支已列於主題一，本主題不重複列，但巡檢時可一併取用。
+
+**已刪除者**：共同通信與韓聯社（含北韓版）均為主機層阻擋，連 RSS 都被擋；
+38 North 的 `/feed/` 與 `/rss/` 亦均回 403。三者於 2026-08-23 自清單刪除，見文末表。
+原外務省（403）與 NHK 政治（工具層阻擋）於 2026-08-18 移除。
 
 ## 無人載具
 
@@ -99,12 +97,20 @@
 | International Tax Review | https://www.internationaltaxreview.com/ | 可用，當日條目。國際稅改、Pillar Two、移轉訂價。2026-08-23 換入，取代需登入的 EY |
 | Tax Foundation | https://taxfoundation.org/ | 可用，週數則。**美國聯邦與各州稅制**，兼含關稅與國際稅 |
 | PIIE | https://www.piie.com/research | 可用但月更。美國貿易與關稅、制裁、供應鏈的經濟分析 |
+| GAO 報告 RSS | https://www.gao.gov/rss/reports.xml | **RSS 可用**（HTML 版 403）。25則／次，含CHIPS、半導體、IRS、稅額抵減 |
+| CBO 出版品 RSS | https://www.cbo.gov/publications/all/rss.xml | **RSS 可用**（HTML 版 403）。30則／次，含關稅預算推估與稅法案評估 |
 | 會計研究發展基金會 | https://www.ardf.org.tw/ | 公報 |
 
-**美國稅政來源於 2026-08-23 加入**，為 Tax Foundation 與 PIIE。
-美國聯邦政府的一手來源（GAO、CBO、財政部新聞稿）**WebFetch 全數阻擋**，
-見文末。故美國稅政以此二智庫替代，**其分析屬〔B〕級**，
-涉及具體法案與數字時須回溯法案原文或官方預算文件，取不到就寫入待查核。
+**美國稅政來源於 2026-08-23 加入**，為 Tax Foundation、PIIE、GAO 與 CBO。
+
+**GAO 與 CBO 的 HTML 版回 403，但其 RSS 可用**，故以 feed 列入。
+兩者是一手官方文件屬〔A〕級，實測當日即有「CHIPS 半導體計畫」「IRS 2026 報稅季」
+「碳捕捉稅額抵減」與「關稅預算推估至 2026-07-31」等條目，正合本主題所需。
+Tax Foundation 與 PIIE 為智庫**屬〔B〕級**，涉及具體法案與數字時
+須回溯 GAO、CBO 或法案原文。
+
+**美國財政部新聞稿不可用**，WebFetch 對其 HTML 與 RSS 均為連線逾時或重置，
+未回狀態碼。需其內容時以 WebSearch 取得。
 
 ## 選用模組：World Monitor（預設關閉）
 
@@ -123,18 +129,27 @@
 
 以下為 2026-08-23 以 WebFetch 逐一複測 29 個網址的結果，18 個可用、11 個有問題。
 
-**主機層阻擋（3 個）**：共同通信 `english.kyodonews.net`、韓聯社 `en.yna.co.kr`
-（含其北韓版 `/nk`）、美國財政部 `home.treasury.gov`。
-WebFetch 回主機拒絕而非數字狀態碼，連日一致，非暫時性。
-日韓動態改由 Nikkei Asia、Korea Herald 與中央社支撐。
+**先試 RSS 再判定不可用。** 2026-08-23 的複測顯示，HTML 回 403 不代表整站不可用——
+GAO 與 CBO 的網頁版回 403，其 RSS 卻正常且內容新鮮，已改以 feed 列入清單。
+**日後遇 403 時，應先試 `/feed/`、`/rss.xml`、`/rss/` 等路徑再判定。**
 
-**403 阻擋（7 個，2026-08-23 測）**：38 North、Stimson、East Asia Forum、
-Chatham House、Tax Policy Center、GAO、CBO。
-**美國聯邦政府的一手來源全數不可用**（GAO、CBO、財政部），
-故財稅主題的美國部分以 Tax Foundation 與 PIIE 替代，兩者為智庫非官方。
+**連 RSS 都阻擋，確認不可用（已自清單刪除）**：
 
-**JS 渲染取不到條目（1 個）**：Carnegie `carnegieendowment.org/research` 回 200
-但索引為前端渲染，WebFetch 只見導覽。需其內容時以個別文章網址或 WebSearch 取得。
+| 來源 | HTML | RSS | 判定 |
+|---|---|---|---|
+| 38 North | 403 | `/feed/` 與 `/rss/` 均 403 | 刪除 |
+| Stimson | 403 | `/feed/` 403 | 刪除 |
+| East Asia Forum | 403 | `/feed/` 403 | 刪除 |
+| Chatham House | 403 | `rss.xml` 與 `/publications/rss` 均 403 | 刪除 |
+| Tax Policy Center | 403 | `rss.xml` 與 taxvox feed 均 403 | 刪除 |
+| 韓聯社（含北韓版） | 主機拒絕 | `RSS/news.xml` 與 `rss/northkorea.xml` 均主機拒絕 | 刪除 |
+| 共同通信 | 主機拒絕 | 未另尋得 feed | 刪除 |
+| 美國財政部 | 逾時／重置 | `rss/press.xml` 同樣逾時 | 刪除 |
+| Carnegie | 200但前端渲染 | `rss/solr` 回 404 | 刪除 |
+
+上述九者均為**主機層的機器人過濾**，換路徑無用，不必再試。
+日韓動態改由 Nikkei Asia、Korea Herald、中央社與 NK News 支撐；
+北韓的技術性分析以 NK News 與 WebSearch 為主。
 
 **回 200 但內容過期或無內容（4 個）**：
 
@@ -167,6 +182,10 @@ NIST 僅到月份。引用時須點進個別文章確認日期。
   換掉三個：Japan Times（feed 為 2023-2025 舊快取）改 Nikkei Asia Politics、
   GMA News（停滯兩週）改 Inquirer、EY Tax News（登入牆）改 International Tax Review。
   共同通信與韓聯社改記為主機層阻擋不可用。
+- 2026-08-23：逐一測試被擋來源的 RSS 路徑。**GAO 與 CBO 的 feed 可用**，
+  已以 RSS 加入主題六，兩者為一手官方文件屬〔A〕級。
+  38 North、Stimson、East Asia Forum、Chatham House、Tax Policy Center、
+  韓聯社、共同通信、美國財政部、Carnegie 九者連 RSS 都被擋，確認刪除。
 - 2026-08-23：主題三新增北韓，來源為 NK News、CSIS Korea、SPF IINA、Brookings。
   主題六新增美國稅政，來源為 Tax Foundation 與 PIIE。主題五新增 Brookings。
   GMA、EY Tax News、IAEA 三者確認刪除，不再列於任何主題。
