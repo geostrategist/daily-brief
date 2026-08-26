@@ -17,6 +17,7 @@ import argparse
 import datetime
 import io
 import json
+import os
 import re
 import sys
 import time
@@ -131,6 +132,41 @@ def fetch_journal(field, name, issn, since):
             "total": msg.get("total-results", 0), "items": items}
 
 
+
+def write_state(path, text):
+    """Record the run date, tolerating pCloud's handling of dotfiles.
+
+    The repo lives on a pCloud virtual drive (exFAT). pCloud re-applies the
+    Hidden attribute to this dotfile behind our back, and Windows fails an
+    open-for-write on an existing hidden file with ERROR_ACCESS_DENIED, so a
+    plain write_text raises PermissionError. attrib -H does not stick on that
+    filesystem; deleting first does. Fall back to that, then to a temp-file
+    replace.
+
+    This is bookkeeping only - the Crossref json is already on disk by now, so
+    a failure here must never fail the run. It only costs the next run its
+    incremental window, and that degrades to the 7-day default.
+    """
+    try:
+        path.write_text(text, encoding="utf-8")
+        return
+    except PermissionError:
+        pass
+
+    try:
+        path.unlink(missing_ok=True)
+        path.write_text(text, encoding="utf-8")
+        return
+    except OSError:
+        pass
+
+    try:
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(text, encoding="utf-8")
+        os.replace(tmp, path)
+    except OSError as exc:                              # noqa: BLE001
+        print("  ! 無法更新 %s（%s），下次改用 7 天預設區間" % (path.name, exc))
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=None,
@@ -186,7 +222,7 @@ def main():
         "journals": results,
     }
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    state_file.write_text(today.isoformat(), encoding="utf-8")
+    write_state(state_file, today.isoformat())
 
     print("\n新文章 %d 篇，查詢失敗 %d 種 → %s" % (n_items, n_err, out))
 
