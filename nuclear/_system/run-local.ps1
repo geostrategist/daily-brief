@@ -102,7 +102,25 @@ try {
     if (Test-Path $draft) {
         $kb = [math]::Round((Get-Item $draft).Length / 1KB, 1)
         Say "done: $draft ($kb KB)"
-        Say "review it, then: python nuclear\_system\publish.py $Date"
+
+        # Publish straight away. The quality gate lives in publish.py --auto:
+        # it stops on a truncated draft, a leftover placeholder or a missing
+        # fixed section, and leaves the draft in _drafts for the morning.
+        # Everything milder stays advisory and goes out, logged either way.
+        $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+        if (-not $py) {
+            Say "python not found on PATH, draft kept unpublished: $draft"
+            exit 1
+        }
+        Say "publishing"
+        & $py (Join-Path $repo "nuclear\_system\publish.py") $Date --auto 2>&1 |
+            ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
+        if ($LASTEXITCODE -eq 0) {
+            Say "published $Date"
+        } else {
+            Say "publish aborted (exit $LASTEXITCODE), draft kept: $draft"
+            exit 1
+        }
     } else {
         Say "run finished but no draft was produced - see log: $log"
         exit 1
