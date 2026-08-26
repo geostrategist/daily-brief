@@ -70,9 +70,10 @@ def check_draft(path, date):
     if missing:
         warn.append("缺少固定欄位：" + "、".join(missing))
 
-    topics = re.findall(r"^## 主題[一二三四五六七]", text, re.M)
-    if len(topics) < 7:
-        warn.append(f"只有 {len(topics)} 個主題，應為 7 個")
+    # Six since 2026-08-24, per DAILY_PROMPT.md and EDITORIAL.md section 6.
+    topics = re.findall(r"^## 主題[一二三四五六]", text, re.M)
+    if len(topics) < 6:
+        warn.append(f"只有 {len(topics)} 個主題，應為 6 個")
 
     items = re.findall(r"^### \d+\.", text, re.M)
     graded = re.findall(r"〔[ABC]〕", text)
