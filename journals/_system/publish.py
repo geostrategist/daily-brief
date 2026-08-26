@@ -96,6 +96,22 @@ def check_draft(path):
     return warn
 
 
+
+# Warnings that must stop an unattended publish. Everything else in
+# check_draft stays advisory: source grades and prose style are judgement
+# calls a human can weigh after the fact, but a truncated brief, a leftover
+# placeholder or a missing fixed section means the model did not finish, and
+# that must never reach the public site unread.
+#
+# A zero-article day is NOT blocked: with a correct query window that is a
+# real finding and the brief says so. It is the 1.5 KB stub produced from a
+# collapsed window that the length check is there to catch.
+BLOCKING = ("缺少固定欄位：", "仍留有佔位字樣", "偏短，確認是否被截斷")
+
+
+def blocking(warn):
+    return [w for w in warn if any(b in w for b in BLOCKING)]
+
 def main():
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument("date", nargs="?", help="YYYYMMDD，省略則用今天")
@@ -103,6 +119,8 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="只顯示將要做什麼")
     ap.add_argument("--force", action="store_true", help="覆蓋已發布的同日晨報")
     ap.add_argument("--yes", "-y", action="store_true", help="不詢問直接發布")
+    ap.add_argument("--auto", action="store_true",
+                    help="排程用：不詢問，但檢查發現嚴重問題就中止")
     args = ap.parse_args()
 
     waiting = drafts_waiting()
@@ -151,6 +169,13 @@ def main():
         print("\n檢查發現：")
         for w in warn:
             print(f"  ⚠ {w}")
+        stop = blocking(warn) if args.auto else []
+        if stop:
+            print("\n自動發布中止，草稿保留原處：")
+            for w in stop:
+                print(f"  ✖ {w}")
+            print(f"  修好後再執行：python {ROOT.name}/_system/publish.py {date}")
+            raise SystemExit(1)
         print("  （以上為提醒，不阻擋發布）")
     else:
         print("檢查：固定欄位、DOI、判讀句、文體均無異常。")
@@ -164,7 +189,7 @@ def main():
         print("\n--dry-run：未執行任何動作。")
         return
 
-    if not args.yes:
+    if not (args.yes or args.auto):
         ans = input("\n確定發布？(y/N) ").strip().lower()
         if ans not in ("y", "yes"):
             print("已取消，草稿保留原處。")
