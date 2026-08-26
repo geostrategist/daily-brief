@@ -50,6 +50,15 @@ if (Test-Path $draft) {
 # site on 2026-08-22 when a scheduled run fired while a manual run was still
 # working, burning API budget on a discarded second copy.
 #
+# Do not re-run over a brief already published for this date. Without this the
+# run burns several minutes and then the agent correctly refuses to write a
+# duplicate, which the exit-1 path below would misreport as a broken run.
+$published = Join-Path $repo "security\briefs\Brief_$Date.md"
+if (Test-Path $published) {
+    Say "already published, skipping: $published"
+    exit 0
+}
+
 # The lock records the owning PID so a lock left behind by a crash or a hard
 # kill does not block every future run. If that process is gone, the lock is
 # stale and we take it over.
@@ -71,6 +80,13 @@ Set-Content -Path $lock -Value $PID -Encoding ASCII
 
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) { Say "claude CLI not found on PATH"; exit 1 }
+
+$py = (Get-Command python -ErrorAction SilentlyContinue).Source
+if (-not $py) {
+    Say "python not found on PATH"
+    Remove-Item $lock -Force -ErrorAction SilentlyContinue
+    exit 1
+}
 
 $promptFile   = Join-Path $repo "security\_system\DAILY_PROMPT.md"
 $overrideFile = Join-Path $repo "security\_system\LOCAL_OVERRIDE.md"
@@ -99,30 +115,51 @@ try {
         & $claude -p --permission-mode acceptEdits --allowedTools $tools 2>&1 |
         ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
 
-    if (Test-Path $draft) {
-        $kb = [math]::Round((Get-Item $draft).Length / 1KB, 1)
-        Say "done: $draft ($kb KB)"
+    # The agent is told to leave a draft and never touch git. It does not
+    # always obey: on 2026-08-27 nuclear and the main site both committed and
+    # pushed themselves, which silently bypassed the publish.py --auto quality
+    # gate and made the run look like a failure (no draft -> exit 1).
+    #
+    # So decide on what is actually on disk rather than on what was asked for.
+    $selfPublished = Test-Path $published
 
-        # Publish straight away. The quality gate lives in publish.py --auto:
-        # it stops on a truncated draft, a leftover placeholder or a missing
-        # fixed section, and leaves the draft in _drafts for the morning.
-        # Everything milder stays advisory and goes out, logged either way.
-        $py = (Get-Command python -ErrorAction SilentlyContinue).Source
-        if (-not $py) {
-            Say "python not found on PATH, draft kept unpublished: $draft"
-            exit 1
+    if ($selfPublished) {
+        # It published itself. Say so loudly - this bypassed the gate - then
+        # run the checks read-only so the warnings still reach the log.
+        Say "WARNING: agent wrote $published directly, bypassing the quality gate"
+        if (Test-Path $draft) {
+            Say "draft also present, left in place: $draft"
         }
-        Say "publishing"
-        & $py (Join-Path $repo "security\_system\publish.py") $Date --auto 2>&1 |
-            ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
-        if ($LASTEXITCODE -eq 0) {
-            Say "published $Date"
+        $head = (& git -C $repo log -1 --format=%H -- "security/briefs/Brief_$Date.md" 2>$null)
+        if ($head) {
+            Say "already committed as $head"
         } else {
-            Say "publish aborted (exit $LASTEXITCODE), draft kept: $draft"
-            exit 1
+            Say "NOT COMMITTED - it is on disk but not pushed; publish it by hand"
         }
-    } else {
+        Say "post-hoc check (advisory, already public):"
+        & $py (Join-Path $repo "security\_system\publish.py") $Date --dry-run --auto 2>&1 |
+            ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
+        exit 0
+    }
+
+    if (-not (Test-Path $draft)) {
         Say "run finished but no draft was produced - see log: $log"
+        exit 1
+    }
+
+    $kb = [math]::Round((Get-Item $draft).Length / 1KB, 1)
+    Say "done: $draft ($kb KB)"
+
+    # Publish through the gate: it stops on a truncated draft, a leftover
+    # placeholder or a missing fixed section and keeps the draft for the
+    # morning. Milder findings stay advisory and go out, logged either way.
+    Say "publishing"
+    & $py (Join-Path $repo "security\_system\publish.py") $Date --auto 2>&1 |
+        ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
+    if ($LASTEXITCODE -eq 0) {
+        Say "published $Date"
+    } else {
+        Say "publish aborted (exit $LASTEXITCODE), draft kept: $draft"
         exit 1
     }
 }

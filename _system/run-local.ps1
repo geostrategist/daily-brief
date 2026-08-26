@@ -101,6 +101,13 @@ if (-not $claude) {
     exit 1
 }
 
+$py = (Get-Command python -ErrorAction SilentlyContinue).Source
+if (-not $py) {
+    Say "python not found on PATH"
+    Remove-Item $lock -Force -ErrorAction SilentlyContinue
+    exit 1
+}
+
 $promptFile   = Join-Path $repo "_system\DAILY_PROMPT.md"
 $overrideFile = Join-Path $repo "_system\LOCAL_OVERRIDE.md"
 foreach ($f in @($promptFile, $overrideFile)) {
@@ -128,12 +135,51 @@ try {
         & $claude -p --permission-mode acceptEdits --allowedTools $tools 2>&1 |
         ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
 
-    if (Test-Path $draft) {
-        $kb = [math]::Round((Get-Item $draft).Length / 1KB, 1)
-        Say "done: $draft ($kb KB)"
-        Say "review it, then: python _system\publish.py $Date"
-    } else {
+    # The agent is told to leave a draft and never touch git. It does not
+    # always obey: on 2026-08-27 nuclear and the main site both committed and
+    # pushed themselves, which silently bypassed the publish.py --auto quality
+    # gate and made the run look like a failure (no draft -> exit 1).
+    #
+    # So decide on what is actually on disk rather than on what was asked for.
+    $selfPublished = Test-Path $published
+
+    if ($selfPublished) {
+        # It published itself. Say so loudly - this bypassed the gate - then
+        # run the checks read-only so the warnings still reach the log.
+        Say "WARNING: agent wrote $published directly, bypassing the quality gate"
+        if (Test-Path $draft) {
+            Say "draft also present, left in place: $draft"
+        }
+        $head = (& git -C $repo log -1 --format=%H -- "briefs/Brief_$Date.md" 2>$null)
+        if ($head) {
+            Say "already committed as $head"
+        } else {
+            Say "NOT COMMITTED - it is on disk but not pushed; publish it by hand"
+        }
+        Say "post-hoc check (advisory, already public):"
+        & $py (Join-Path $repo "_system\publish.py") $Date --dry-run --auto 2>&1 |
+            ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
+        exit 0
+    }
+
+    if (-not (Test-Path $draft)) {
         Say "run finished but no draft was produced - see log: $log"
+        exit 1
+    }
+
+    $kb = [math]::Round((Get-Item $draft).Length / 1KB, 1)
+    Say "done: $draft ($kb KB)"
+
+    # Publish through the gate: it stops on a truncated draft, a leftover
+    # placeholder or a missing fixed section and keeps the draft for the
+    # morning. Milder findings stay advisory and go out, logged either way.
+    Say "publishing"
+    & $py (Join-Path $repo "_system\publish.py") $Date --auto 2>&1 |
+        ForEach-Object { Add-Content -Path $log -Value $_ -Encoding UTF8 }
+    if ($LASTEXITCODE -eq 0) {
+        Say "published $Date"
+    } else {
+        Say "publish aborted (exit $LASTEXITCODE), draft kept: $draft"
         exit 1
     }
 }
