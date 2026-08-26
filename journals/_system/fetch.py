@@ -167,6 +167,30 @@ def write_state(path, text):
     except OSError as exc:                              # noqa: BLE001
         print("  ! 無法更新 %s（%s），下次改用 7 天預設區間" % (path.name, exc))
 
+
+def last_published(briefs_dir):
+    """Date of the newest published brief, or None if there are none.
+
+    This is the anchor for the query window. It beats a state file because it
+    is derived from what actually shipped: if a run dies, or the state file is
+    lost, or someone re-runs fetch.py three times while debugging, this number
+    does not move. .last-run did move, and on 2026-08-26 that collapsed the
+    window to a single day and produced an empty brief.
+    """
+    best = None
+    for f in briefs_dir.glob("Brief_????????.md"):
+        m = re.fullmatch(r"Brief_(\d{4})(\d{2})(\d{2})", f.stem)
+        if not m:
+            continue
+        try:
+            d = datetime.date(*(int(g) for g in m.groups()))
+        except ValueError:                              # e.g. Brief_20260231
+            continue
+        if best is None or d > best:
+            best = d
+    return best
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--days", type=int, default=None,
@@ -184,18 +208,43 @@ def main():
 
     state_file = ROOT / "_system" / ".last-run"
     today = datetime.date.today()
+    default_d = today - datetime.timedelta(days=7)
+
     if args.days is not None:
         since_d = today - datetime.timedelta(days=args.days)
-    elif state_file.exists():
-        try:
-            since_d = datetime.date.fromisoformat(state_file.read_text().strip())
-        except Exception:                               # noqa: BLE001
-            since_d = today - datetime.timedelta(days=7)
+        why = "--days %d" % args.days
     else:
-        since_d = today - datetime.timedelta(days=7)
-    since = since_d.isoformat()
+        # Anchor on the last brief that actually shipped. Start from its own
+        # date, not the day after: Crossref filters on from-created-date and a
+        # paper registered later that same day would otherwise fall in the gap.
+        # Re-reporting an already-covered paper is cheap, the prompt dedupes
+        # against the previous brief. Losing one is not.
+        pub = last_published(ROOT / "briefs")
+        if pub is not None:
+            since_d = min(pub, today)
+            why = "上一份已發布晨報 %s" % pub.isoformat()
+        else:
+            # Nothing has shipped yet. Fall back to the state file, then to a
+            # week, so a fresh clone still produces something sensible.
+            since_d = default_d
+            why = "預設七天"
+            if state_file.exists():
+                try:
+                    since_d = datetime.date.fromisoformat(
+                        state_file.read_text().strip())
+                    why = "尚無已發布晨報，改用 .last-run %s" % since_d.isoformat()
+                except (ValueError, OSError):
+                    pass
 
-    print("查詢 %d 種期刊，自 %s 起新登錄者" % (len(journals), since))
+    # A window starting in the future matches nothing, which reads exactly like
+    # a quiet day. Refuse it rather than ship a blank brief.
+    if since_d > today:
+        since_d = default_d
+        why = "區間超前，改用預設七天"
+
+    since = since_d.isoformat()
+    print("查詢 %d 種期刊，自 %s 起新登錄者（區間依據：%s）"
+          % (len(journals), since, why))
     results, n_items, n_err = [], 0, 0
     for field, name, issn in journals:
         r = fetch_journal(field, name, issn, since)
