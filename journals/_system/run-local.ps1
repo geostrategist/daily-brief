@@ -1,6 +1,6 @@
 # Journals brief - local daily draft run.
 #
-# Fired by Windows Task Scheduler at 01:00. Leaves a draft in journals/_drafts/
+# Fired by Windows Task Scheduler Mon at 01:00. Leaves a draft in journals/_drafts/
 # and stops: no commit, no push. Publishing is a separate, human-gated step
 # (see publish.py).
 #

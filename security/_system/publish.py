@@ -1,6 +1,6 @@
 """Promote a reviewed draft from security/_drafts/ into security/briefs/ and push.
 
-The 03:00 local run writes a draft and stops. Nothing reaches the site until this
+The Mon-Thu 03:00 local run writes a draft and stops. Nothing reaches the site until this
 script runs, so a bad brief is a file on disk rather than a published page.
 
     python security/_system/publish.py              # today's draft

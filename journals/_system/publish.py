@@ -1,6 +1,6 @@
 """Promote a reviewed draft from journals/_drafts/ into journals/briefs/ and push.
 
-The 01:00 local run writes a draft and stops. Nothing reaches the site until this
+The Mon 01:00 local run writes a draft and stops. Nothing reaches the site until this
 script runs, so a bad brief is a file on disk rather than a published page.
 
     python journals/_system/publish.py              # today's draft

@@ -1,6 +1,6 @@
 """Promote a reviewed draft from conflict/_drafts/ into conflict/briefs/ and push.
 
-The 04:00 local run writes a draft and stops. Nothing reaches the site until this
+The Tue/Thu 04:00 local run writes a draft and stops. Nothing reaches the site until this
 script runs, so a bad brief is a file on disk rather than a published page.
 
     python conflict/_system/publish.py              # today's draft

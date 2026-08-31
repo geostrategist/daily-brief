@@ -1,6 +1,6 @@
 # 核能晨報 · Nuclear Daily Brief
 
-每日產出一份核能晨報，**依規範屬性分節**而非地理分區：核子安全（針對意外與失效）、
+每週二產出一份核能晨報，**依規範屬性分節**而非地理分區：核子安全（針對意外與失效）、
 核子保安（針對惡意行為者）、核子保防（針對國家移作他用）。
 
 網站：https://geostrategist.github.io/daily-brief/nuclear/
@@ -10,7 +10,7 @@
 ## 這是什麼
 
 母站「實踐國企晨報」的子站，沿用同一套已驗證的架構：沒有後端的靜態網站，
-每天由 Claude Code 排程 agent 巡檢固定來源、比對前 21 份晨報、只寫變化，
+依排程由 Claude Code agent 巡檢固定來源、比對前 21 份晨報、只寫變化，
 產出一份 Markdown 檔並推上 GitHub Pages。
 
 **為什麼另開子站而非併入母站主題七**：母站七大主題共用一份晨報，核能被壓縮到每日一至兩則。
@@ -31,17 +31,17 @@ manifest.json           PWA 設定（圖示指向 ../icons/）
 sw.js                   Service Worker，快取名稱與母站分離
 briefs/
   manifest.json         日期索引，新的在最前面
-  Brief_YYYYMMDD.md     每日晨報
-_drafts/                每日凌晨兩點產出的草稿，未發布。已 gitignore
+  Brief_YYYYMMDD.md     每份晨報
+_drafts/                週二凌晨兩點產出的草稿，未發布。已 gitignore
   logs/                 每次執行的完整輸出
 _system/
   TOPICS.md             八個欄位的設定 — 改這裡就改變隔日版面與巡檢範圍
   SOURCES.md            固定巡檢網址清單（18 個，逐一實測過）
   EDITORIAL.md          編輯規範 — 決定怎麼寫
   REFERENCE.md          規範編號、三者之區分、研究缺口、台灣現況基準
-  DAILY_PROMPT.md       每日指令原文（本機與雲端共用）
+  DAILY_PROMPT.md       執行指令原文（本機與雲端共用）
   LOCAL_OVERRIDE.md     本機執行時附加的覆寫規則（寫到 _drafts/、不要 push）
-  run-local.ps1         本機凌晨兩點排程執行的腳本，只產草稿
+  run-local.ps1         本機週二凌晨兩點排程執行的腳本，只產草稿
   publish.py            過目後發布：搬進 briefs/、重建索引、commit、push
   rebuild-manifest.py   依 briefs/ 內實際檔案重建索引
 ```
@@ -93,7 +93,7 @@ _system/
 
 風格設定與快取都已分離，兩站互不干擾。頁尾互相連結。
 
-## 每日流程
+## 每次執行的流程
 
 見 `_system/DAILY_PROMPT.md`。摘要如下：
 
@@ -105,12 +105,12 @@ _system/
 6. `python nuclear/_system/rebuild-manifest.py`
 7. commit 並 push，GitHub Pages 自動發布
 
-**排程**：每日凌晨兩點，**在本機**跑，產出草稿後停下——不 commit、不 push。
-過目後才由 `publish.py` 發布。母站晨報為凌晨五點，同樣在本機，兩者錯開。
+**排程**：每週二凌晨兩點，**在本機**跑，產出草稿後停下——不 commit、不 push。
+過目後才由 `publish.py` 發布。母站晨報為週一三五凌晨四點，同樣在本機，兩者錯開。
 
-## 每日的實際操作
+## 實際操作
 
-凌晨兩點，Windows 工作排程器會跑 `_system/run-local.ps1`，巡檢 18 個來源、寫出草稿到
+週二凌晨兩點，Windows 工作排程器會跑 `_system/run-local.ps1`，巡檢 18 個來源、寫出草稿到
 `_drafts/Brief_YYYYMMDD.md`，然後**停在那裡**。網站上不會有任何變化。
 
 看稿：

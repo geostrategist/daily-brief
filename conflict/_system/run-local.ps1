@@ -1,6 +1,6 @@
 # International conflict brief - local daily draft run.
 #
-# Fired by Windows Task Scheduler at 04:00. Leaves a draft in conflict/_drafts/
+# Fired by Windows Task Scheduler Tue/Thu at 04:00. Leaves a draft in conflict/_drafts/
 # and stops: no commit, no push. Publishing is a separate, human-gated step
 # (see publish.py).
 #

@@ -1,6 +1,6 @@
 # National security brief - local daily draft run.
 #
-# Fired by Windows Task Scheduler at 03:00. Leaves a draft in security/_drafts/
+# Fired by Windows Task Scheduler Mon-Thu at 03:00. Leaves a draft in security/_drafts/
 # and stops: no commit, no push. Publishing is a separate, human-gated step
 # (see publish.py).
 #
