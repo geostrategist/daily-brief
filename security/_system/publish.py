@@ -81,10 +81,16 @@ def check_draft(path):
     if "待查核" not in text:
         warn.append("全文沒有「待查核」")
 
-    # the placeholder that means the model did not finish a section
-    for ph in ["TODO", "TBD", "待補", "XXX", "（待填）"]:
+    # the placeholder that means the model did not finish a section.
+    # ASCII tokens are unambiguous; the Chinese ones must be isolated as a
+    # field marker (right after a colon/bracket, right before punctuation/
+    # bracket/line end) or prose like "...仍為懸缺待補之項目" false-positives.
+    for ph in ["TODO", "TBD", "XXX"]:
         if ph in text:
             warn.append(f"仍留有佔位字樣「{ph}」")
+    m = re.search(r"(?:^|[\s：:（(])(待補|待填)(?:$|[\s。，、）)\n])", text, re.M)
+    if m:
+        warn.append(f"仍留有佔位字樣「{m.group(1)}」")
 
     # Attribution without evidence is this site's characteristic failure: the
     # public debate reaches for "this is a PRC influence operation" long before
